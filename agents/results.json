@@ -1,0 +1,12 @@
+[
+    {
+        "decision": "BULL",
+        "amount": 0.001,
+        "thesis": "The historical price data shows a generally upward trend, particularly with the last observed values rising from the low of 56.77 to 93.67. This consistent increase suggests a continuation of upward momentum, indicating that the next value is likely to go up."
+    },
+    {
+        "decision": "BULL",
+        "amount": 0.005,
+        "thesis": "The historical price data shows an upward trend with the last known price of 93.67, which is significantly higher than the previous values, suggesting increasing buying interest. Given the pattern and recent price movements, the next value is likely to continue this upward trajectory."
+    }
+]

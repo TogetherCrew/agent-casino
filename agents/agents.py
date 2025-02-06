@@ -2,31 +2,18 @@
 An example file showcasing how the agents would be working.
 # TODO: Make everything on-chain.
 """
-
+import logging
 import asyncio
-import json
 from crewai import Crew, Agent, Task
 from crewai.crews.crew_output import CrewOutput
 from dotenv import load_dotenv
-
-
-def load_agent_config(filepath: str) -> dict:
-    """
-    Load agent configurations from a JSON file.
-    TODO: Load from on-chain data.
-
-    Args:
-        filepath (str): Path to the JSON configuration file.
-
-    Returns:
-        dict: The parsed agent configuration data.
-    """
-    with open(filepath, "r") as file:
-        return json.load(file)
+from prices import FetchHistoricalPrices
+from configs import FetchAgentConfigs
+from schema import AgentOutput, AgentConfig
 
 
 def create_agents_and_tasks(
-    agent_configs: dict, config_key: str
+    agent_configs: list[AgentConfig], config_key: str
 ) -> tuple[list[Agent], list[Task]]:
     """
     Create agents and tasks based on a specific configuration key.
@@ -41,13 +28,7 @@ def create_agents_and_tasks(
     Raises:
         ValueError: If the specified configuration key is not found.
     """
-    price_agent_config = agent_configs.get(config_key)
-    if not price_agent_config:
-        raise ValueError(
-            f"{config_key} configuration not found in the agent configuration file."
-        )
-
-    print(f"Loaded {len(price_agent_config)} Agents!")
+    logging.info(f"Loaded {len(agent_configs)} Agents!")
 
     agents = []
     tasks = []
@@ -56,19 +37,22 @@ def create_agents_and_tasks(
         "Explain your reasoning."
     )
 
-    for agent_info in price_agent_config:
+    for agent_info in agent_configs:
         agent = Agent(
-            role=agent_info["role"],
-            goal=agent_info["goal"],
-            backstory=agent_info["backstory"],
-            allow_code_execution=True,
+            role=agent_info.name,
+            goal=agent_info.goal,
+            backstory=agent_info.backstory,
         )
         agents.append(agent)
         tasks.append(
             Task(
                 description=task_description,
                 agent=agent,
-                expected_output="A prediction ('up' or 'down') with reasoning.",
+                expected_output=(
+                    "A prediction ('BEAR', 'BULL', or 'SKIP') with a thesis (reasoning) max 1 paragraph for it."
+                    f" Please include how much to be invested and it should be less equal than {agent_info.balance}"
+                ),
+                output_pydantic=AgentOutput,
             )
         )
     return agents, tasks
@@ -95,18 +79,17 @@ async def execute_crews(
     # Await all the crews concurrently
     results = await asyncio.gather(*crew_tasks)
 
-    for i, result in enumerate(results, 1):
-        print("-" * 40)
-        print(f"Crew {i} Result:", result)
+    # Json dump for bets
+    # TODO: to be stored on-chain
+    import json
 
+    results_data = [
+        json.loads(result.tasks_output[0].raw) for result in results
+    ]  # Convert each result to a dictionary
 
-def load_prices() -> list[dict[str, list]]:
-    """
-    TODO: Read price histories
-    """
-    # returning something static
-    prices = {"input_value": [100, 102, 101, 103, 104]}
-    return prices
+    # Save to a JSON file
+    with open("results.json", "w", encoding="utf-8") as f:
+        json.dump(results_data, f, indent=4)
 
 
 def main():
@@ -116,17 +99,18 @@ def main():
     load_dotenv()
 
     # Load agent configuration from a JSON file.
-    agent_configs = load_agent_config("agent_roles.json")
+    agent_configs = FetchAgentConfigs("agent_roles.json").fetch()
 
     # Create agents and tasks using the 'price_predictor' configuration.
     agents, tasks = create_agents_and_tasks(agent_configs, "price_predictor")
 
-    # Define input data for tasks.
-    input_data = load_prices()
+    # Define input data for tasks
+    input_data = FetchHistoricalPrices().fetch()
 
     # Run the asynchronous crew execution.
     asyncio.run(execute_crews(agents, tasks, input_data))
 
 
 if __name__ == "__main__":
+    logging.basicConfig(level=logging.INFO)
     main()
