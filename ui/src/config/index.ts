@@ -1,1 +1,0 @@
-export { wagmiAdapter } from './wagmi.adapter'
