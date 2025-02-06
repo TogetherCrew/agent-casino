@@ -1,12 +1,13 @@
 import { Layout } from "@/components/Layout";
-import { AgentGrid } from "@/components/agents/AgentGrid";
 
-export default function Home() {
+export default function AgentPage({ params }: { params: { id: string } }) {
+
+  const { id } = params;
 
   return (
     <Layout>
       <div className={"pages py-4 px-8"}>
-        <AgentGrid />
+        <h1>Agent {id}</h1>
       </div>
     </Layout>
   );
