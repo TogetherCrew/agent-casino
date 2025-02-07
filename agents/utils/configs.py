@@ -12,11 +12,18 @@ class FetchAgentConfigs:
     """
 
     def __init__(
-        self, contract_address: str | None = None, provider: str | None = None
+        self,
+        contract_address: str | None = None,
+        provider: str | None = None,
+        contract_abi_file_path: str = "contract_abi.json",
+        agent_abi_file_path: str = "agent_abi.json",
     ):
         """
         Args:
-            filepath (str): Path to the JSON configuration file.
+            contract_address (str): the contract address. default to be read from env `CONTRACT_ADDRESS`
+            provider (str): web3 provider. default to be read from env `WEB3_PROVIDER`
+            contract_abi_file_path (str): the contract abi file path. default is `agents/contract_abi.json`
+            agent_abi_file_path (str): the contract abi file path. default is `agents/agent_abi.json`
         """
         ConfigureCdp().configure()
 
@@ -31,14 +38,15 @@ class FetchAgentConfigs:
             else Credentials().load_contract_address()
         )
 
-        # TODO: update it to be something else
-        with open("contract_abi.json", "r") as file:
+        with open(contract_abi_file_path, "r") as file:
             contract_abi = json.load(file)
-        
-        with open("agent_abi.json", "r") as file:
+
+        with open(agent_abi_file_path, "r") as file:
             self.agent_abi = json.load(file)
 
-        self.contract: Contract = self.w3.eth.contract(address=contract_address, abi=contract_abi)
+        self.contract: Contract = self.w3.eth.contract(
+            address=contract_address, abi=contract_abi
+        )
 
     def fetch(self) -> list[AgentConfig]:
         """
@@ -54,7 +62,7 @@ class FetchAgentConfigs:
         for tokenId in range(1, token_counter):
             address = self.contract.functions.agentWallets(tokenId).call()
             agent_contract = self.w3.eth.contract(address=address, abi=self.agent_abi)
-            
+
             backstory = agent_contract.functions.backstory.call()
             coin_base_wallet_id = agent_contract.functions.coin_base_wallet_id.call()
             name = agent_contract.functions.name.call()
@@ -63,9 +71,10 @@ class FetchAgentConfigs:
             wallet = Wallet.fetch(address)
 
             # prepare the agent
-            agent = AgentConfig(name=name, backstory=backstory, coinBaseWalletId=coin_base_wallet_id)
+            agent = AgentConfig(
+                name=name, backstory=backstory, coinBaseWalletId=coin_base_wallet_id
+            )
             agents.append(agent)
-
 
         # TODO: remove previous codes
         # for agent_data in data["price_predictor"]:
@@ -81,7 +90,7 @@ class FetchAgentConfigs:
         #     agents.append(agent)
 
         return agents
-    
+
     def _fetch_token_id_counter(self) -> int:
         token_counter: int = self.contract.functions._tokenIdCounter().call()
         return token_counter

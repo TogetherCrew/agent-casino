@@ -19,11 +19,11 @@ class Credentials:
             raise ValueError("CONTRACT_ADDRESS doesn't exist!")
 
         return contract_address
-    
+
     def load_cdp_credentials(self) -> dict[str, str]:
         api_key_name = os.getenv("CDP_API_KEY_NAME")
         private_key = os.getenv("CDP_API_KEY_PRIVATE_KEY")
-        
+
         # To avoid parsing errors
         private_key = private_key.replace("\\n", "\n")
 

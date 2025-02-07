@@ -9,7 +9,7 @@ from schema import AgentOutput, AgentConfig
 
 
 def create_agents_and_tasks(
-    agent_configs: list[AgentConfig]
+    agent_configs: list[AgentConfig],
 ) -> tuple[list[Agent], list[Task]]:
     """
     Create agents and tasks based on a specific configuration key.
@@ -95,7 +95,7 @@ def main():
     load_dotenv()
 
     # Load agent configuration from a JSON file.
-    agent_configs = FetchAgentConfigs("agent_roles.json").fetch()
+    agent_configs = FetchAgentConfigs().fetch()
 
     # Create agents and tasks related to each
     agents, tasks = create_agents_and_tasks(agent_configs)
