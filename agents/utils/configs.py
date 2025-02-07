@@ -1,9 +1,10 @@
 import json
+
+from cdp import Wallet
 from schema import AgentConfig
+from utils import ConfigureCdp, Credentials
 from web3 import Web3
 from web3.contract import Contract
-from utils import Credentials, ConfigureCdp
-from cdp import Wallet
 
 
 class FetchAgentConfigs:

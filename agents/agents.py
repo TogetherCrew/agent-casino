@@ -1,11 +1,12 @@
-import logging
 import asyncio
-from crewai import Crew, Agent, Task
+import logging
+
+from crewai import Agent, Crew, Task
 from crewai.crews.crew_output import CrewOutput
 from dotenv import load_dotenv
-from utils.prices import FetchHistoricalPrices
+from schema import AgentConfig, AgentOutput
 from utils.configs import FetchAgentConfigs
-from schema import AgentOutput, AgentConfig
+from utils.prices import FetchHistoricalPrices
 
 
 def create_agents_and_tasks(
