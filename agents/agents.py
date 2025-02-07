@@ -1,8 +1,3 @@
-"""
-An example file showcasing how the agents would be working.
-# TODO: Make everything on-chain.
-"""
-
 import logging
 import asyncio
 from crewai import Crew, Agent, Task
