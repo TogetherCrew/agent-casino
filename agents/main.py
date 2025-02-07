@@ -38,7 +38,7 @@ def create_agents_and_tasks(
         agent = Agent(
             role=agent_info.name,
             goal=agent_info.goal,
-            backstory=agent_info.backstory,
+            bio=agent_info.bio,
         )
         agents.append(agent)
         tasks.append(

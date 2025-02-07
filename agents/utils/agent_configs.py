@@ -79,7 +79,7 @@ class FetchAgentConfigs:
             address = self.contract.functions.agentWallets(tokenId).call()
             agent_contract = self.w3.eth.contract(address=address, abi=self.agent_abi)
 
-            backstory = agent_contract.functions.backstory.call()
+            bio = agent_contract.functions.bio.call()
             coin_base_wallet_id = agent_contract.functions.coin_base_wallet_id.call()
             name = agent_contract.functions.name.call()
 
@@ -88,7 +88,7 @@ class FetchAgentConfigs:
 
             # prepare the agent
             agent = AgentConfig(
-                name=name, backstory=backstory, coinBaseWalletId=coin_base_wallet_id
+                name=name, bio=bio, coinBaseWalletId=coin_base_wallet_id
             )
             agents.append(agent)
 
@@ -96,7 +96,7 @@ class FetchAgentConfigs:
         # for agent_data in data["price_predictor"]:
         #     agent = AgentConfig(
         #         name=agent_data["name"],
-        #         backstory=agent_data["backstory"],
+        #         bio=agent_data["bio"],
         #         goal=agent_data.get(
         #             "goal",
         #             "Predict whether the given price data indicates that the price will go up or down.",

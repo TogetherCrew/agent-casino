@@ -21,8 +21,8 @@ class AgentConfig(BaseModel):
     name: str = Field(
         ..., description="The name of an Agent. Could also represent the role."
     )
-    backstory: str = Field(
-        ..., description="The backstory of what the Agent should be."
+    bio: str = Field(
+        ..., description="The bio of what the Agent should be."
     )
     goal: str = Field(
         ...,
