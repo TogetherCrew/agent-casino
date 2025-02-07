@@ -1,4 +1,4 @@
-import { useTokenIdCounter } from "@/hooks/useTokenIdCounter"
+import { useTokenIdCounter } from "@/hooks/agentFactory/useTokenIdCounter"
 import { Loading } from "../Loading"
 import { AgentCard } from "./AgentCard"
 
