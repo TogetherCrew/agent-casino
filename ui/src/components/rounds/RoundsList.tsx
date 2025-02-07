@@ -1,20 +1,21 @@
 import { useGetUserRounds } from "@/hooks/predictionV2/useGetUserRounds";
 import { Loading } from "../Loading";
 import { useEffect, useState } from "react";
-import { UserRound, transformUserRounds } from "@/app/utils/rounds/transform";
+import { UserBet, BetInfo, transformUserBets } from "@/app/utils/userBets.transform";
 import { UserRoundRow, UserRoundRowHeader } from "./UserRoundRow";
 
 export const RoundsList = ({ cursor, size, address }: { cursor: number, size: number, address: `0x${string}` }) => {
-  const { data } = useGetUserRounds(address, cursor, size);
-  const [userRounds, setUserRounds] = useState<UserRound[]>([]);
+
+  const { data } = useGetUserRounds(address, BigInt(cursor | 0), BigInt(size));
+  const [userBets, setUserBets] = useState<UserBet[]>([]);
 
   useEffect(() => {
     if (!data) return;
-    const userRounds = transformUserRounds(data);
-    setUserRounds(userRounds);
+    const userBets = transformUserBets(data as [bigint[], BetInfo[], bigint]);
+    setUserBets(userBets);
   }, [data]);
 
-  if (!data || userRounds.length === 0) {
+  if (!data || userBets.length === 0) {
     return <Loading />;
   }
 
@@ -22,8 +23,8 @@ export const RoundsList = ({ cursor, size, address }: { cursor: number, size: nu
     <div>
       <div className="flex flex-col divide-y divide-black">
         <UserRoundRowHeader />
-        {userRounds.map((round, index) => (
-          <UserRoundRow key={index} round={round} />
+        {userBets.map((userBet, index) => (
+          <UserRoundRow key={index} userBet={userBet} />
         ))}
       </div>
     </div>

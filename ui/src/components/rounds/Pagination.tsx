@@ -3,9 +3,10 @@ import { useState } from "react";
 
 export const Pagination = ({ totalItems, itemsPerPage, onPageChange }: { totalItems: number, itemsPerPage: number, onPageChange: (page: number) => void }) => {
   const pageCount = Math.ceil(totalItems / itemsPerPage);
-  const [page, setPage] = useState(1);
+  const [page, setPage] = useState(0);
 
   const handlePageChange = (page: number) => {
+    console.log('Pagination.handlePageChange', page);
     setPage(page);
     onPageChange(page);
   }

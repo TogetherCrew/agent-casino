@@ -6,18 +6,18 @@ export enum Position {
 }
 
 // Interface for the BetInfo struct
-interface BetInfo {
+export interface BetInfo {
   position: Position;
   amount: bigint;  // uint256 maps to bigint in TypeScript
   claimed: boolean;
 }
 
-export interface UserRound {
+export interface UserBet {
   epoch: bigint;
   bet: BetInfo;
 }
 
-export const transformUserRounds = (data: [bigint[], BetInfo[], bigint]): UserRound[] => {
+export const transformUserBets = (data: [bigint[], BetInfo[], bigint]): UserBet[] => {
   const epochs = data[0];
   const bets = data[1];
 
@@ -37,7 +37,7 @@ export const transformUserRounds = (data: [bigint[], BetInfo[], bigint]): UserRo
     }
     transformed.push(transformedRound);
   }
-  return transformed;
+  return transformed.reverse();
 }
 
 
