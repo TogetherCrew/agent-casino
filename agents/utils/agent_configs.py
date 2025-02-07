@@ -2,7 +2,7 @@ import logging
 import json
 
 from cdp import Cdp
-from schema import AgentConfig
+from utils.schema import AgentConfig
 from utils.credentials import Credentials
 from web3 import Web3
 from web3.contract import Contract

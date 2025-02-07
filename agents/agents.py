@@ -4,9 +4,9 @@ import logging
 from crewai import Agent, Crew, Task
 from crewai.crews.crew_output import CrewOutput
 from dotenv import load_dotenv
-from schema import AgentConfig, AgentOutput
-from utils.configs import FetchAgentConfigs
+from utils.agent_configs import FetchAgentConfigs
 from utils.prices import FetchHistoricalPrices
+from utils.schema import AgentConfig, AgentOutput
 
 
 def create_agents_and_tasks(
