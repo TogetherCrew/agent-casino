@@ -1,7 +1,11 @@
+import { useAgentWallets } from "@/hooks/agentFactory/useAgentWallets";
+import { useName } from "@/hooks/agentWallet/useName";
 import Link from "next/link"
 
 export const AgentCard = ({ agentId, isOwnerAgent }: { agentId: number, isOwnerAgent: boolean }) => {
 
+  const { data: agentWallets } = useAgentWallets(agentId);
+  const { data: name } = useName(agentWallets as `0x${string}`);
 
 
   return (
@@ -23,7 +27,8 @@ export const AgentCard = ({ agentId, isOwnerAgent }: { agentId: number, isOwnerA
         </div>
 
         <div className="text-center">
-          <h2 className="text-xl font-semibold">Agent Name {agentId}</h2>
+          <h3 className="text-xs">Agent {agentId}</h3>
+          <h2 className="text-xl font-semibold">{name as string}</h2>
         </div>
 
         <div>
