@@ -55,10 +55,10 @@ export default function NameInput() {
         className="mt-1 p-2 w-full border rounded-md"
         placeholder="Enter name"
       />
-      {isAvailableLoading && <p className="text-gray-500 text-sm mt-1">Checking availability...</p>}
-      {isRegisterPriceLoading && <p className="text-gray-500 text-sm mt-1">Checking price...</p>}
-      {price && <p className="text-gray-500 text-sm mt-1">Registration cost: {formatEther(price as bigint)} ETH</p>}
-      {errors.name && <p className="text-red-500 text-sm mt-1">{errors.name.message as string}</p>}
+      {isAvailableLoading && <p className="text-gray-500 text-xs mt-1">Checking availability...</p>}
+      {isRegisterPriceLoading && <p className="text-gray-500 text-xs mt-1">Checking price...</p>}
+      {price && <p className="text-gray-500 text-xs mt-1">Registration cost: {formatEther(price as bigint)} ETH</p>}
+      {errors.name && <p className="text-red-500 text-xs mt-1">{errors.name.message as string}</p>}
     </div>
   );
 }
