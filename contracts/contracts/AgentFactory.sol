@@ -117,23 +117,23 @@ contract AgentFactory is ERC721, Ownable {
     }
 
     constructor(
-        address _gameMaster,
-        address _agntToken
+        address _gameMaster
+        // address _agntToken
     ) ERC721("AI Agent", "AIA") Ownable(msg.sender) {
         require(_gameMaster != address(0), "Invalid game master address");
-        require(_agntToken != address(0), "Invalid AGNT token address");
+        // require(_agntToken != address(0), "Invalid AGNT token address");
 
         gameMaster = _gameMaster;
-        agntToken = IERC20(_agntToken);
+        // agntToken = IERC20(_agntToken);
 
         // Deploy attribute tokens
-        strToken = new AttributeToken("Strength Token", "STR", address(this));
-        intToken = new AttributeToken(
-            "Intelligence Token",
-            "INT",
-            address(this)
-        );
-        vitToken = new AttributeToken("Vitality Token", "VIT", address(this));
+        // strToken = new AttributeToken("Strength Token", "STR", address(this));
+        // intToken = new AttributeToken(
+        //     "Intelligence Token",
+        //     "INT",
+        //     address(this)
+        // );
+        // vitToken = new AttributeToken("Vitality Token", "VIT", address(this));
     }
 
     function calculateMintableAttributes(
