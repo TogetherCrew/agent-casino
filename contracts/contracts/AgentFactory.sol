@@ -91,6 +91,7 @@ contract AgentFactory is ERC721, Ownable {
         address indexed newGameMaster
     );
     event BioUpdated(uint256 indexed agentId, string newBio);
+    event WalletIdUpdated(uint256 indexed agentId, string newWalletId);
     event AttributesMinted(
         address indexed user,
         uint256 strAmount,
@@ -98,6 +99,7 @@ contract AgentFactory is ERC721, Ownable {
         uint256 vitAmount
     );
     event AGNTUnstaked(address indexed user, uint256 amount);
+
 
     modifier onlyAgentOwner(uint256 agentId) {
         require(ownerOf(agentId) == msg.sender, "Not agent owner");
@@ -386,6 +388,18 @@ contract AgentFactory is ERC721, Ownable {
         wallet.setBio(newBio);
 
         emit BioUpdated(agentId, newBio);
+    }
+
+    function updateWalletId(uint256 agentId, string calldata newWalletId)
+        external
+        onlyGameMaster
+    {
+        require(agentWallets[agentId] != address(0), "Invalid agentId");
+
+        AgentWallet wallet = AgentWallet(agentWallets[agentId]);
+
+        wallet.setWalletId(newWalletId);
+        emit WalletIdUpdated(agentId, newWalletId);
     }
 
     // Utility functions
