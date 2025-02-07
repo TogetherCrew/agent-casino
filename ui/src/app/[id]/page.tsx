@@ -1,8 +1,17 @@
-import { Layout } from "@/components/Layout";
+'use client'
 
-export default function AgentPage({ params }: { params: { id: string } }) {
+import { Layout } from "@/components/Layout";
+import { Loading } from "@/components/Loading";
+import { useParams } from "next/navigation";
+
+export default function AgentPage() {
+  const params = useParams();
 
   const { id } = params;
+
+  if (!id) {
+    return <Loading />;
+  }
 
   return (
     <Layout>
