@@ -2,18 +2,19 @@
 An example file showcasing how the agents would be working.
 # TODO: Make everything on-chain.
 """
+
 import logging
 import asyncio
 from crewai import Crew, Agent, Task
 from crewai.crews.crew_output import CrewOutput
 from dotenv import load_dotenv
-from prices import FetchHistoricalPrices
-from configs import FetchAgentConfigs
+from utils.prices import FetchHistoricalPrices
+from utils.configs import FetchAgentConfigs
 from schema import AgentOutput, AgentConfig
 
 
 def create_agents_and_tasks(
-    agent_configs: list[AgentConfig], config_key: str
+    agent_configs: list[AgentConfig]
 ) -> tuple[list[Agent], list[Task]]:
     """
     Create agents and tasks based on a specific configuration key.
@@ -101,8 +102,8 @@ def main():
     # Load agent configuration from a JSON file.
     agent_configs = FetchAgentConfigs("agent_roles.json").fetch()
 
-    # Create agents and tasks using the 'price_predictor' configuration.
-    agents, tasks = create_agents_and_tasks(agent_configs, "price_predictor")
+    # Create agents and tasks related to each
+    agents, tasks = create_agents_and_tasks(agent_configs)
 
     # Define input data for tasks
     # return dict timestamps and prices for each
