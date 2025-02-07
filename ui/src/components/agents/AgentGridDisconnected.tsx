@@ -17,7 +17,7 @@ export const AgentGridDisconnected = () => {
   if (data) {
     return (
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-        {[...Array(Number(data))].map((_, index) => {
+        {[...Array(Number(data))].reverse().map((_, index) => {
           const agentId = index + 1;
           return <AgentCard key={index} agentId={agentId} isOwnerAgent={false} />
         })}
