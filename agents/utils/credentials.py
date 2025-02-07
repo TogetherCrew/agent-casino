@@ -1,3 +1,4 @@
+import logging
 import os
 
 from dotenv import load_dotenv
@@ -24,6 +25,10 @@ class Credentials:
     def load_cdp_credentials(self) -> dict[str, str]:
         api_key_name = os.getenv("CDP_API_KEY_NAME")
         private_key = os.getenv("CDP_API_KEY_PRIVATE_KEY")
+        if not private_key or not api_key_name:
+            raise ValueError(
+                "Missing envs `CDP_API_KEY_NAME` or `CDP_API_KEY_PRIVATE_KEY`"
+            )
 
         # To avoid parsing errors
         private_key = private_key.replace("\\n", "\n")

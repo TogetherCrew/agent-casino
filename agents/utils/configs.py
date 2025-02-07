@@ -1,8 +1,9 @@
+import logging
 import json
 
-from cdp import Wallet
+from cdp import Cdp
 from schema import AgentConfig
-from utils import ConfigureCdp, Credentials
+from utils.credentials import Credentials
 from web3 import Web3
 from web3.contract import Contract
 
@@ -26,18 +27,28 @@ class FetchAgentConfigs:
             contract_abi_file_path (str): the contract abi file path. default is `agents/contract_abi.json`
             agent_abi_file_path (str): the contract abi file path. default is `agents/agent_abi.json`
         """
-        ConfigureCdp().configure()
+        credentials = Credentials()
 
+        logging.info("Configuring CDP!")
+        cdp_creds = credentials.load_cdp_credentials()
+        Cdp.configure(
+            api_key_name=cdp_creds["api_key_name"],
+            private_key=cdp_creds["private_key"],
+        )
+
+        logging.info("Connecting to the web3 provider!")
         self.w3: Web3 = (
             Web3(Web3.HTTPProvider(provider))
             if provider
-            else Web3(Web3.HTTPProvider(Credentials().load_web3_provider()))
+            else Web3(Web3.HTTPProvider(credentials.load_web3_provider()))
         )
         self.contract_address: str = (
             contract_address
             if contract_address
-            else Credentials().load_contract_address()
+            else credentials.load_contract_address()
         )
+
+        logging.info("Loading ABIs")
 
         with open(contract_abi_file_path, "r") as file:
             contract_abi = json.load(file)
@@ -45,8 +56,10 @@ class FetchAgentConfigs:
         with open(agent_abi_file_path, "r") as file:
             self.agent_abi = json.load(file)
 
+        logging.info("Connecting to web3 contract!")
+
         self.contract: Contract = self.w3.eth.contract(
-            address=contract_address, abi=contract_abi
+            address=self.contract_address, abi=contract_abi
         )
 
     def fetch(self) -> list[AgentConfig]:
@@ -61,6 +74,8 @@ class FetchAgentConfigs:
 
         agents: list[AgentConfig] = []
         for tokenId in range(1, token_counter):
+            logging.info(f"Fetching agent contract {tokenId}/{token_counter}!")
+
             address = self.contract.functions.agentWallets(tokenId).call()
             agent_contract = self.w3.eth.contract(address=address, abi=self.agent_abi)
 
@@ -69,7 +84,7 @@ class FetchAgentConfigs:
             name = agent_contract.functions.name.call()
 
             # Fetch wallets
-            wallet = Wallet.fetch(address)
+            # wallet = Wallet.fetch(address)
 
             # prepare the agent
             agent = AgentConfig(
