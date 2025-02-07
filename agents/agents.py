@@ -105,6 +105,7 @@ def main():
     agents, tasks = create_agents_and_tasks(agent_configs, "price_predictor")
 
     # Define input data for tasks
+    # return dict timestamps and prices for each
     input_data = FetchHistoricalPrices().fetch()
 
     # Run the asynchronous crew execution.

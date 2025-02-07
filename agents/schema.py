@@ -27,4 +27,4 @@ class AgentConfig(BaseModel):
         ...,
         description="What the Agent is trying to achieve",
     )
-    balance: float = Field(..., description="Their wallet balance")
+    coinBaseWalletId: float = Field(..., description="Their wallet id")

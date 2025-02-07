@@ -3,12 +3,12 @@
     {
       "name": "John Doe",
       "backstory": "You are an expert in market trends and stock price analysis with a keen eye for financial indicators.",
-      "balance": 0.001
+      "coinBaseWalletId": 0
     },
     {
       "name": "Jane Doe",
       "backstory": "You have years of experience in breaking news and investigative journalism, with a knack for identifying key information quickly.",
-      "balance": 0.005
+      "coinBaseWalletId": 0
     }
   ]
 }
