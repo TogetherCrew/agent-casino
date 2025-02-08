@@ -12,46 +12,48 @@ export const Pagination = ({ totalItems, itemsPerPage, onPageChange }: { totalIt
   }
 
   return (
-    <div className="flex justify-between items-center">
-      <div>
-        <span className="text-sm">
-          Page {page + 1} of {pageCount}
-        </span>
-      </div>
-      <div className="flex gap-2 justify-center mt-4 text-md">
-        <button
-          onClick={() => handlePageChange(0)}
-          className="px-4 py-2 rounded-full bg-black text-white hover:opacity-80"
-          disabled={pageCount === 0}
-        >
-          <ChevronDoubleLeftIcon className="w-4 h-4" />
-        </button>
-        {pageCount > 0 && (
-          <>
-            <button
-              onClick={() => handlePageChange(page - 1)}
-              className="px-4 py-2 rounded-full bg-black text-white hover:opacity-80"
-              disabled={page < 1}
-            >
-              <ChevronLeftIcon className="w-4 h-4" />
-            </button>
-            <button
-              onClick={() => handlePageChange(page + 1)}
-              className="px-4 py-2 rounded-full bg-black text-white hover:opacity-80"
-              disabled={page >= pageCount - 1}
-            >
-              <ChevronRightIcon className="w-4 h-4" />
-            </button>
-            <button
-              onClick={() => handlePageChange(pageCount - 1)}
-              className="px-4 py-2 rounded-full bg-black text-white hover:opacity-80"
-            >
-              <ChevronDoubleRightIcon className="w-4 h-4" />
-            </button>
-          </>
-        )}
-      </div>
-    </div >
+    <div className="bg-gray-200 font-semibold text-gray-500 p-2 rounded-full">
+      <div className="flex justify-between items-center">
+        <div>
+          <span className="text-xs ml-2">
+            Page {page + 1} of {pageCount}
+          </span>
+        </div>
+        <div className="flex gap-2 justify-center items-center text-md">
+          <button
+            onClick={() => handlePageChange(0)}
+            className="px-4 py-2 rounded-full bg-black text-white hover:opacity-80"
+            disabled={pageCount === 0}
+          >
+            <ChevronDoubleLeftIcon className="w-4 h-4" />
+          </button>
+          {pageCount > 0 && (
+            <>
+              <button
+                onClick={() => handlePageChange(page - 1)}
+                className="px-4 py-2 rounded-full bg-black text-white hover:opacity-80"
+                disabled={page < 1}
+              >
+                <ChevronLeftIcon className="w-4 h-4" />
+              </button>
+              <button
+                onClick={() => handlePageChange(page + 1)}
+                className="px-4 py-2 rounded-full bg-black text-white hover:opacity-80"
+                disabled={page >= pageCount - 1}
+              >
+                <ChevronRightIcon className="w-4 h-4" />
+              </button>
+              <button
+                onClick={() => handlePageChange(pageCount - 1)}
+                className="px-4 py-2 rounded-full bg-black text-white hover:opacity-80"
+              >
+                <ChevronDoubleRightIcon className="w-4 h-4" />
+              </button>
+            </>
+          )}
+        </div>
+      </div >
+    </div>
   )
 }
 

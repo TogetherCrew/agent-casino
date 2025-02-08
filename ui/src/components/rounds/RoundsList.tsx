@@ -21,7 +21,7 @@ export const RoundsList = ({ cursor, size, address }: { cursor: number, size: nu
 
   return (
     <div>
-      <div className="flex flex-col divide-y divide-black">
+      <div className="flex flex-col gap-4">
         <UserRoundRowHeader />
         {userBets.map((userBet, index) => (
           <UserRoundRow key={index} userBet={userBet} />

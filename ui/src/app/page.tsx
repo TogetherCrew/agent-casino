@@ -1,13 +1,11 @@
 import { Layout } from "@/components/Layout";
-import { AgentGrid } from "@/components/agents/AgentGrid";
+import Link from "next/link";
 
 export default function Home() {
 
   return (
     <Layout>
-      <div className={"pages py-4 px-8"}>
-        <AgentGrid />
-      </div>
+      <Link href="/agents">Agents</Link>
     </Layout>
   );
 }

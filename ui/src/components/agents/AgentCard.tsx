@@ -9,7 +9,7 @@ export const AgentCard = ({ agentId, isOwnerAgent }: { agentId: number, isOwnerA
 
 
   return (
-    <Link href={`/${agentId}`}>
+    <Link href={`/agents/${agentId}`}>
       <div className="bg-black text-white rounded-lg p-4 flex flex-col justify-between gap-12 hover:cursor-pointer hover:opacity-80">
 
         <div className="flex justify-between">
