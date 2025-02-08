@@ -54,7 +54,7 @@ export const WithdrawlForm = ({ agentId, agentWallet, onSuccess }: WithdrawlForm
         primaryType: "Withdraw",
       })
 
-      // TODO: send result to backend
+      // TODO: send signature + message to backend
       console.log(`signature: ${signature}`)
     } catch (error) {
       console.error("Transaction failed:", error);
