@@ -3,6 +3,8 @@ import { useName } from "@/hooks/agentWallet/useName";
 import { useBio } from "@/hooks/agentWallet/useBio";
 import { Loading } from "../Loading";
 import { OwnerActions } from "./OwnerActions";
+import { CardHeader } from "../card/CardHeader";
+import { Card } from "../card/Card";
 
 export const AgentHero = ({ agentId }: { agentId: number }) => {
   const { data: agentWallets } = useAgentWallets(agentId);
@@ -15,20 +17,31 @@ export const AgentHero = ({ agentId }: { agentId: number }) => {
 
   return (
     <>
-      <div className="bg-black text-white rounded-lg p-4 flex flex-col justify-between gap-3">
-        <div className="flex justify-between text-xs">
-          <h2>Agent {agentId}</h2>
-          <div className="flex gap-2 items-center">
-            <span>Balance: 0.00 ETH</span>
-            <OwnerActions agentId={agentId} />
-          </div>
+      <div className="flex gap-4">
+        <div className="flex flex-col gap-4 w-2/3">
+          <Card>
+            <div className="flex flex-col justify-between gap-4">
+              <CardHeader>Charcter</CardHeader>
+              <h1 className="flex flex-col">
+                <span className="text-lg font-semibold">{name as string}</span>
+                <span className="text-gray-600 text-xs font-semibold uppercase">Agent #{agentId}</span>
+              </h1>
+              <p className="text-gray-600 text-sm">{bio as string}</p>
+            </div>
+          </Card>
         </div>
-        <h1 className="text-2xl font-bold">{name as string}</h1>
-        <div></div>
-      </div>
-      <div className="bg-white text-black p-4 flex flex-col justify-between gap-3">
-        <p className="text-sm">{bio as string}</p>
-      </div>
+        <div className="flex flex-col gap-4 w-1/3">
+          <Card>
+            <div className="flex flex-col justify-between gap-4">
+              <CardHeader>Balance</CardHeader>
+              <p className="text-2xl font-semibold">0.00 ETH</p>
+              <div className="flex gap-2 w-full">
+                <OwnerActions agentId={agentId} />
+              </div>
+            </div>
+          </Card>
+        </div>
+      </div >
     </>
   )
 }

@@ -1,6 +1,7 @@
 import { useOwnerOf } from "@/hooks/agentFactory/useOwnerOf";
 import { useAppKitAccount } from "@reown/appkit/react";
 import { isAddressEqual } from "viem";
+import DepositModal from "./DepositModal";
 
 export const OwnerActions = ({ agentId }: { agentId: number }) => {
   const { address } = useAppKitAccount();
@@ -11,11 +12,9 @@ export const OwnerActions = ({ agentId }: { agentId: number }) => {
   }
 
   return (
-    <div>
-      <div className="inline-flex">
-        <button className="border border-white bg-transparent text-white px-4 py-2 rounded-l-full hover:bg-white hover:text-black hover:cursor-pointer">Deposit</button>
-        <button className="border-y border-r border-white bg-transparent text-white px-4 py-2 rounded-r-full hover:bg-white hover:text-black hover:cursor-pointer">Withdraw</button>
-      </div>
-    </div>
+    <>
+      <DepositModal targetWallet={"0x0000000000000000000000000000000000000000"} />
+      <button className="bg-black text-white px-4 py-2 rounded-full hover:opacity-80 hover:cursor-pointer w-full">Withdraw</button>
+    </>
   )
 }
