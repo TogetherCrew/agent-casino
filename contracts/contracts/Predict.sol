@@ -876,7 +876,7 @@ event BetBull(address indexed sender, uint256 indexed epoch, uint256 amount, str
         betInfo.thesis = thesis; 
         userRounds[msg.sender].push(epoch);
 
-        emit BetBull(msg.sender, epoch, amount, thesis);
+        emit BetBear(msg.sender, epoch, amount, thesis);
     }
 
     /**
