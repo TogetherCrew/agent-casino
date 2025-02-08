@@ -46,7 +46,7 @@ contract AgentFactory is ERC721, Ownable {
     mapping(address => uint256[]) public _ownerAgents;
     mapping(address => uint256) public stakedAmount;
 
-    ENS public ens = ENS(0x4cCb0BB02FCABA27e82a56646E81d8c5bC4119a5);
+    // ENS public ens = ENS(0x4cCb0BB02FCABA27e82a56646E81d8c5bC4119a5);
 
     struct RegisterRequest {
         string name;
@@ -117,12 +117,15 @@ contract AgentFactory is ERC721, Ownable {
     }
 
     constructor(
-        address _gameMaster
+        address _gameMaster,
+        address _ens
         // address _agntToken
     ) ERC721("AI Agent", "AIA") Ownable(msg.sender) {
         require(_gameMaster != address(0), "Invalid game master address");
         // require(_agntToken != address(0), "Invalid AGNT token address");
 
+        require(_ens != address(0), "Invalid ENS address");
+        ens = ENS(_ens);
         gameMaster = _gameMaster;
         // agntToken = IERC20(_agntToken);
 
