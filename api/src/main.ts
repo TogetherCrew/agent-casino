@@ -1,11 +1,12 @@
-import { NestFactory } from '@nestjs/core'
-import { AppModule } from './app.module'
-import { ConfigService } from '@nestjs/config'
-import helmet from 'helmet'
 import * as compression from 'compression'
+import helmet from 'helmet'
 import { Logger, LoggerErrorInterceptor } from 'nestjs-pino'
-import * as session from 'express-session'
-import { VersioningType, ValidationPipe } from '@nestjs/common'
+
+import { ValidationPipe, VersioningType } from '@nestjs/common'
+import { ConfigService } from '@nestjs/config'
+import { NestFactory } from '@nestjs/core'
+
+import { AppModule } from './app.module'
 import { setupSwagger } from './doc'
 import { HttpExceptionFilter } from './shared/filters/http-exception.filter'
 
@@ -14,21 +15,13 @@ async function bootstrap() {
     app.useLogger(app.get(Logger))
     app.useGlobalInterceptors(new LoggerErrorInterceptor())
     app.useGlobalFilters(new HttpExceptionFilter())
-    app.useGlobalPipes(new ValidationPipe())
+    app.useGlobalPipes(new ValidationPipe({ transform: true }))
     app.use(helmet())
     app.use(compression())
     app.enableCors()
 
     const configService = app.get(ConfigService)
     const port = configService.get('app.port')
-
-    app.use(
-        session({
-            secret: configService.get('app.sessionSecret'),
-            resave: false,
-            saveUninitialized: false,
-        })
-    )
 
     app.enableVersioning({
         type: VersioningType.URI,
