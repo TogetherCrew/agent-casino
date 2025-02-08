@@ -6,34 +6,19 @@ import PredictModule from '../../ignition/modules/PredictModule';
 
 async function main() {
   const [deployer] = await hre.viem.getWalletClients();
-//   const gameMaster = deployer.account.address;
 
-
-// const publicClient = createPublicClient({
-// 	chain: baseSepolia,
-// 	transport: http("https://sepolia.base.org"),
-// });
-
-
-//     const { contract: agentFactory } = await hre.ignition.deploy(AgentFactoryModule, {
-// 		parameters: {
-// 			AgentFactoryModule: { gameMaster },
-// 		},
-//     });
-//   console.log("AgentFactory deployed at:", agentFactory.address);
-
-
-    // ================
+  // ================
   // 1) Deploy AgentFactory
   // ================
   const gameMaster = deployer.account.address;
-
+  const ens = '0x49ae3cc2e3aa768b1e5654f5d3c6002144a59581';
   const { contract: agentFactory } = await hre.ignition.deploy(
     AgentFactoryModule,
     {
       parameters: {
         AgentFactoryModule: {
-          gameMaster
+          gameMaster,
+          ens
         },
       },
     }
@@ -83,7 +68,7 @@ async function main() {
   
   await hre.run("verify:verify", {
     address: agentFactory.address,
-    constructorArguments: [gameMaster],
+    constructorArguments: [gameMaster,ens],
   });
   console.log("AgentFactory verified!");
 
