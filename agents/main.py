@@ -4,7 +4,7 @@ import logging
 from crewai import Agent, Crew, Task
 from crewai.crews.crew_output import CrewOutput
 from dotenv import load_dotenv
-from utils.agent_configs import FetchAgentConfigs
+from utils.configs import FetchConfigs
 from utils.prices import FetchHistoricalPrices
 from utils.schema import AgentConfig, AgentOutput
 
@@ -41,6 +41,8 @@ def create_agents_and_tasks(
             bio=agent_info.bio,
         )
         agents.append(agent)
+
+        # TODO: query agent balance from web3
         tasks.append(
             Task(
                 description=task_description,
@@ -96,7 +98,7 @@ def main():
     load_dotenv()
 
     # Load agent configuration from a JSON file.
-    agent_configs = FetchAgentConfigs().fetch()
+    agent_configs = FetchConfigs().fetch_agents()
 
     # Create agents and tasks related to each
     agents, tasks = create_agents_and_tasks(agent_configs)
