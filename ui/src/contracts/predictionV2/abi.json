@@ -66,12 +66,6 @@
           "internalType": "uint256",
           "name": "amount",
           "type": "uint256"
-        },
-        {
-          "indexed": false,
-          "internalType": "string",
-          "name": "thesis",
-          "type": "string"
         }
       ],
       "name": "BetBear",
@@ -97,12 +91,6 @@
           "internalType": "uint256",
           "name": "amount",
           "type": "uint256"
-        },
-        {
-          "indexed": false,
-          "internalType": "string",
-          "name": "thesis",
-          "type": "string"
         }
       ],
       "name": "BetBull",
@@ -471,11 +459,6 @@
           "internalType": "uint256",
           "name": "epoch",
           "type": "uint256"
-        },
-        {
-          "internalType": "string",
-          "name": "thesis",
-          "type": "string"
         }
       ],
       "name": "betBear",
@@ -489,11 +472,6 @@
           "internalType": "uint256",
           "name": "epoch",
           "type": "uint256"
-        },
-        {
-          "internalType": "string",
-          "name": "thesis",
-          "type": "string"
         }
       ],
       "name": "betBull",
@@ -646,7 +624,7 @@
         {
           "components": [
             {
-              "internalType": "enum Predict.Position",
+              "internalType": "enum PancakePredictionV2.Position",
               "name": "position",
               "type": "uint8"
             },
@@ -659,14 +637,9 @@
               "internalType": "bool",
               "name": "claimed",
               "type": "bool"
-            },
-            {
-              "internalType": "string",
-              "name": "thesis",
-              "type": "string"
             }
           ],
-          "internalType": "struct Predict.BetInfo[]",
+          "internalType": "struct PancakePredictionV2.BetInfo[]",
           "name": "",
           "type": "tuple[]"
         },
@@ -727,7 +700,7 @@
       "name": "ledger",
       "outputs": [
         {
-          "internalType": "enum Predict.Position",
+          "internalType": "enum PancakePredictionV2.Position",
           "name": "position",
           "type": "uint8"
         },
@@ -740,11 +713,6 @@
           "internalType": "bool",
           "name": "claimed",
           "type": "bool"
-        },
-        {
-          "internalType": "string",
-          "name": "thesis",
-          "type": "string"
         }
       ],
       "stateMutability": "view",
@@ -781,7 +749,7 @@
       "name": "oracle",
       "outputs": [
         {
-          "internalType": "contract IEOFeedAdapter",
+          "internalType": "contract AggregatorV3Interface",
           "name": "",
           "type": "address"
         }
