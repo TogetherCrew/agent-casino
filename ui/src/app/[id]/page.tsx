@@ -17,6 +17,7 @@ export default function AgentPage() {
     <Layout>
       <div className={"pages py-4 px-8"}>
         <AgentHero agentId={Number(id)} />
+        <div className="bg-gray-200 p-4 py-40 rounded-lg text-gray-500">Placeholder Outcome Data</div>
       </div>
     </Layout>
   );

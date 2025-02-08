@@ -6,11 +6,6 @@
           "internalType": "address",
           "name": "_gameMaster",
           "type": "address"
-        },
-        {
-          "internalType": "address",
-          "name": "_agntToken",
-          "type": "address"
         }
       ],
       "stateMutability": "nonpayable",
@@ -482,6 +477,25 @@
         }
       ],
       "name": "Transfer",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "uint256",
+          "name": "agentId",
+          "type": "uint256"
+        },
+        {
+          "indexed": false,
+          "internalType": "string",
+          "name": "newWalletId",
+          "type": "string"
+        }
+      ],
+      "name": "WalletIdUpdated",
       "type": "event"
     },
     {
@@ -1242,6 +1256,24 @@
         }
       ],
       "name": "updateBio",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "uint256",
+          "name": "agentId",
+          "type": "uint256"
+        },
+        {
+          "internalType": "string",
+          "name": "newWalletId",
+          "type": "string"
+        }
+      ],
+      "name": "updateWalletId",
       "outputs": [],
       "stateMutability": "nonpayable",
       "type": "function"
