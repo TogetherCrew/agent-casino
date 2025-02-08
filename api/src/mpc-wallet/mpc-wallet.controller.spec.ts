@@ -1,18 +1,18 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { MpcWalletController } from './mpc-wallet.controller';
+import { Test, TestingModule } from '@nestjs/testing'
+import { MpcWalletController } from './mpc-wallet.controller'
 
 describe('MpcWalletController', () => {
-  let controller: MpcWalletController;
+    let controller: MpcWalletController
 
-  beforeEach(async () => {
-    const module: TestingModule = await Test.createTestingModule({
-      controllers: [MpcWalletController],
-    }).compile();
+    beforeEach(async () => {
+        const module: TestingModule = await Test.createTestingModule({
+            controllers: [MpcWalletController],
+        }).compile()
 
-    controller = module.get<MpcWalletController>(MpcWalletController);
-  });
+        controller = module.get<MpcWalletController>(MpcWalletController)
+    })
 
-  it('should be defined', () => {
-    expect(controller).toBeDefined();
-  });
-});
+    it('should be defined', () => {
+        expect(controller).toBeDefined()
+    })
+})
