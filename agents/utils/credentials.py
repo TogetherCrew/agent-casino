@@ -15,9 +15,9 @@ class Credentials:
         return provider
 
     def load_contract_address(self) -> str:
-        contract_address = os.getenv("CONTRACT_ADDRESS")
+        contract_address = os.getenv("AGENT_FACTORY_CONTRACT_ADDRESS")
         if contract_address is None:
-            raise ValueError("CONTRACT_ADDRESS doesn't exist!")
+            raise ValueError("AGENT_FACTORY_CONTRACT_ADDRESS doesn't exist!")
 
         return contract_address
     
