@@ -22,10 +22,10 @@ interface WithdrawArgs {
 }
 
 @Injectable()
-export class MpcWalletService {
+export class AgentService {
     constructor(
         private readonly viemUtilsService: ViemUtilsService,
-        @InjectPinoLogger(MpcWalletService.name)
+        @InjectPinoLogger(AgentService.name)
         private readonly logger: PinoLogger
     ) {}
 

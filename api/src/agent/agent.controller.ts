@@ -1,17 +1,17 @@
 import { Body, Controller, Get, Param, Post } from '@nestjs/common'
 import { ApiOkResponse, ApiOperation } from '@nestjs/swagger'
 
+import { AgentService } from './agent.service'
 import { FundingWalletDto, FundingWalletResponse } from './dto/funding-wallet'
 import {
     WithdrawBodyDto,
     WithdrawParamsDto,
     WithdrawResponse,
 } from './dto/withdraw'
-import { MpcWalletService } from './mpc-wallet.service'
 
 @Controller('mpc-wallet')
-export class MpcWalletController {
-    constructor(private readonly mpcWalletService: MpcWalletService) {}
+export class AgentController {
+    constructor(private readonly agentService: AgentService) {}
 
     @Get(':chainId/:agentId/funding-wallet')
     @ApiOperation({ summary: 'Get funding wallet address.' })
@@ -20,7 +20,7 @@ export class MpcWalletController {
         type: FundingWalletResponse,
     })
     async getFundingWallet(@Param() fundingWalletDto: FundingWalletDto) {
-        const walletId = await this.mpcWalletService.getFundingWallet(
+        const walletId = await this.agentService.getFundingWallet(
             fundingWalletDto.chainId,
             fundingWalletDto.agentId
         )
@@ -38,7 +38,7 @@ export class MpcWalletController {
         @Param() withdrawParamsDto: WithdrawParamsDto,
         @Body() withdrawBodyDto: WithdrawBodyDto
     ) {
-        const txHash = await this.mpcWalletService.withdrawFunds({
+        const txHash = await this.agentService.withdrawFunds({
             chainId: withdrawParamsDto.chainId,
             message: withdrawBodyDto.message,
             signature: withdrawBodyDto.signature,

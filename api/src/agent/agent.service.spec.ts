@@ -1,15 +1,16 @@
 import { Test, TestingModule } from '@nestjs/testing'
-import { MpcWalletService } from './mpc-wallet.service'
 
-describe('MpcWalletService', () => {
-    let service: MpcWalletService
+import { AgentService } from './agent.service'
+
+describe('AgentService', () => {
+    let service: AgentService
 
     beforeEach(async () => {
         const module: TestingModule = await Test.createTestingModule({
-            providers: [MpcWalletService],
+            providers: [AgentService],
         }).compile()
 
-        service = module.get<MpcWalletService>(MpcWalletService)
+        service = module.get<AgentService>(AgentService)
     })
 
     it('should be defined', () => {

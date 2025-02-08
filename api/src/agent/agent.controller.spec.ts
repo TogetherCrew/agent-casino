@@ -1,15 +1,16 @@
 import { Test, TestingModule } from '@nestjs/testing'
-import { MpcWalletController } from './mpc-wallet.controller'
 
-describe('MpcWalletController', () => {
-    let controller: MpcWalletController
+import { AgentController } from './agent.controller'
+
+describe('AgentController', () => {
+    let controller: AgentController
 
     beforeEach(async () => {
         const module: TestingModule = await Test.createTestingModule({
-            controllers: [MpcWalletController],
+            controllers: [AgentController],
         }).compile()
 
-        controller = module.get<MpcWalletController>(MpcWalletController)
+        controller = module.get<AgentController>(AgentController)
     })
 
     it('should be defined', () => {
