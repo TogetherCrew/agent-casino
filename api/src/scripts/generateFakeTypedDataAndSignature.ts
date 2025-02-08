@@ -11,11 +11,11 @@
  *   3. Prints out the typedData JSON (with bigints as strings), the signature, & the signer address.
  */
 
-import { createWalletClient, http } from 'viem';
-import { privateKeyToAccount } from 'viem/accounts';
-import * as chains from 'viem/chains';
+import { createWalletClient, http } from 'viem'
+import { privateKeyToAccount } from 'viem/accounts'
+import * as chains from 'viem/chains'
 
-import { SupportedChainId } from '../shared/types/chain.type';
+import { SupportedChainId } from '../shared/types/chain.type'
 
 /**
  * If you want strong typing for your typedData, define an interface.
