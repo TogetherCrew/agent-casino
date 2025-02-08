@@ -1,34 +1,13 @@
 import hre from 'hardhat';
 import { parseUnits } from 'viem';
 
-import AgentFactoryModule from '../../ignition/modules/AgentFactoryModule';
-import PredictModule from '../../ignition/modules/PredictModule';
+import PredictModule from '../../../ignition/modules/PredictModule';
 
 async function main() {
   const [deployer] = await hre.viem.getWalletClients();
 
   // ================
-  // 1) Deploy AgentFactory
-  // ================
-  const gameMaster = deployer.account.address;
-  const ens = '0x49ae3cc2e3aa768b1e5654f5d3c6002144a59581';
-  const { contract: agentFactory } = await hre.ignition.deploy(
-    AgentFactoryModule,
-    {
-      parameters: {
-        AgentFactoryModule: {
-          gameMaster,
-          ens
-        },
-      },
-    }
-  );
-
-  console.log("AgentFactory deployed at:", agentFactory.address);
-
-
-  // ================
-  // 2) Deploy Predict
+  // 1) Deploy Predict
   // ================
   const oracleAddress = "0x10Cd3Ee16501d7b754311107555AFE1eBd38CC1e";
   const adminAddress = deployer.account.address;
@@ -65,12 +44,6 @@ async function main() {
   // ================
   // Verify on block explorer
   // ================
-  
-  await hre.run("verify:verify", {
-    address: agentFactory.address,
-    constructorArguments: [gameMaster,ens],
-  });
-  console.log("AgentFactory verified!");
 
   await hre.run("verify:verify", {
     address: predict.address,
