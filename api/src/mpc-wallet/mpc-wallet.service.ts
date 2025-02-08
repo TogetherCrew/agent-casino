@@ -1,4 +1,6 @@
+// mpc-wallet.service.ts
 import { InjectPinoLogger, PinoLogger } from 'nestjs-pino'
+import { recoverTypedDataAddress } from 'viem'
 
 import {
     BadRequestException,
@@ -12,6 +14,12 @@ import {
 } from '../shared/constants/chain.constants'
 import { SupportedChainId } from '../shared/types/chain.type'
 import { ViemUtilsService } from '../utils/viem.utils.service'
+
+interface WithdrawArgs {
+    chainId: SupportedChainId
+    message: any
+    signature: `0x${string}`
+}
 
 @Injectable()
 export class MpcWalletService {
@@ -28,6 +36,79 @@ export class MpcWalletService {
         const walletAddress = await this.getAgentWalletAddress(chainId, agentId)
         const walletId = await this.getAgentWalletId(chainId, walletAddress)
         return walletId
+    }
+
+    public async withdrawFunds({
+        chainId,
+        message,
+        signature,
+    }: WithdrawArgs): Promise<string> {
+        const typedData = message
+
+        const recoveredAddress = await this.recoverSigner(typedData, signature)
+
+        await this.verifySignature(
+            chainId,
+            recoveredAddress,
+            typedData,
+            signature
+        )
+
+        this.checkSignatureExpiration(typedData)
+
+        const walletAddress = await this.getAgentWalletAddress(
+            chainId,
+            typedData.message.agentId
+        )
+        const walletId = await this.getAgentWalletId(chainId, walletAddress)
+
+        return walletId
+    }
+
+    private async recoverSigner(
+        typedData: any,
+        signature: `0x${string}`
+    ): Promise<`0x${string}`> {
+        try {
+            return await recoverTypedDataAddress({
+                domain: typedData.domain,
+                types: typedData.types,
+                primaryType: typedData.primaryType,
+                message: typedData.message,
+                signature,
+            })
+        } catch (err) {
+            throw new BadRequestException(`Could not recover address: ${err}`)
+        }
+    }
+
+    private async verifySignature(
+        chainId: SupportedChainId,
+        recoveredAddress: `0x${string}`,
+        typedData: any,
+        signature: `0x${string}`
+    ) {
+        const publicClient = this.viemUtilsService.getPublicClient(chainId)
+        const isValid = await publicClient.verifyTypedData({
+            address: recoveredAddress,
+            domain: typedData.domain,
+            types: typedData.types,
+            primaryType: typedData.primaryType,
+            message: typedData.message,
+            signature,
+        })
+
+        if (!isValid) {
+            throw new BadRequestException('Invalid EIP-712 signature')
+        }
+    }
+
+    private checkSignatureExpiration(typedData: any): void {
+        const nowSec = Math.floor(Date.now() / 1000)
+        const expireAt = BigInt(typedData.message.expireAt ?? 0)
+        if (expireAt < BigInt(nowSec)) {
+            throw new BadRequestException('Signature is expired')
+        }
     }
 
     private async getAgentWalletAddress(
