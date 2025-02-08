@@ -18,7 +18,8 @@ export const Header = () => {
             priority
           />
         </Link>
-        <Link href="/agents" className='hover:underline hover:cursor-pointer'>Agents</Link>
+        <Link href="/agents" className='bg-white px-4 py-2 font-semibold rounded-full hover:bg-gray-200 hover:cursor-pointer'>Agents</Link>
+        <Link href="/rounds" className='bg-white px-4 py-2 font-semibold rounded-full hover:bg-gray-200 hover:cursor-pointer'>Rounds</Link>
       </div>
 
       <div className="flex items-center gap-4">
