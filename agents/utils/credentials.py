@@ -20,6 +20,13 @@ class Credentials:
             raise ValueError("CONTRACT_ADDRESS doesn't exist!")
 
         return contract_address
+    
+    def load_prediction_contract_address(self) -> str:
+        prediction_contract_address = os.getenv("PREDICTION_CONTRACT_WEB3_PROVIDER")
+        if prediction_contract_address is None:
+            raise ValueError("PREDICTION_CONTRACT_WEB3_PROVIDER doesn't exist!")
+
+        return prediction_contract_address
 
     def load_cdp_credentials(self) -> dict[str, str]:
         api_key_name = os.getenv("CDP_API_KEY_NAME")

@@ -29,3 +29,21 @@ class AgentConfig(BaseModel):
         description="What the Agent is trying to achieve",
     )
     coinBaseWalletId: float = Field(..., description="Their wallet id")
+    address: str = Field(..., description="Agent wallet address")
+
+
+class RoundData(BaseModel):
+    epoch: int
+    startTimestamp: int
+    lockTimestamp: int
+    closeTimestamp: int
+    lockPrice: int
+    closePrice: int
+    lockOracleId: int
+    closeOracleId: int
+    totalAmount: int
+    bullAmount: int
+    bearAmount: int
+    rewardBaseCalAmount: int
+    rewardAmount: int
+    oracleCalled: bool

@@ -8,7 +8,7 @@ from web3 import Web3
 from web3.contract import Contract
 
 
-class FetchAgentConfigs:
+class FetchConfigs:
     """
     Class responsible for loading agent configurations (e.g., from JSON).
     """
@@ -16,9 +16,11 @@ class FetchAgentConfigs:
     def __init__(
         self,
         contract_address: str | None = None,
+        prediction_contract_address: str | None = None,
         provider: str | None = None,
         contract_abi_file_path: str = "contract_abi.json",
         agent_abi_file_path: str = "agent_abi.json",
+        prediction_abi_file_path: str = "prediction_abi.json",
     ):
         """
         Args:
@@ -48,6 +50,12 @@ class FetchAgentConfigs:
             else credentials.load_contract_address()
         )
 
+        self.prediction_contract_address: str = (
+            prediction_contract_address
+            if prediction_contract_address
+            else credentials.load_prediction_contract_address()
+        )
+
         logging.info("Loading ABIs")
 
         with open(contract_abi_file_path, "r") as file:
@@ -56,13 +64,16 @@ class FetchAgentConfigs:
         with open(agent_abi_file_path, "r") as file:
             self.agent_abi = json.load(file)
 
+        with open(prediction_abi_file_path, "r") as file:
+            self.prediction_abi = json.load(file)
+
         logging.info("Connecting to web3 contract!")
 
         self.contract: Contract = self.w3.eth.contract(
             address=self.contract_address, abi=contract_abi
         )
 
-    def fetch(self) -> list[AgentConfig]:
+    def fetch_agents(self) -> list[AgentConfig]:
         """
         Fetch agent configurations from a JSON file and parse them into AgentConfig objects.
         TODO: Fetch from on-chain data
@@ -88,7 +99,10 @@ class FetchAgentConfigs:
 
             # prepare the agent
             agent = AgentConfig(
-                name=name, bio=bio, coinBaseWalletId=coin_base_wallet_id
+                name=name,
+                bio=bio,
+                coinBaseWalletId=coin_base_wallet_id,
+                address=address,
             )
             agents.append(agent)
 
