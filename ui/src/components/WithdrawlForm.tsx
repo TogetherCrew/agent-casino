@@ -34,6 +34,7 @@ export const WithdrawlForm = ({ agentId, agentWallet, onSuccess }: WithdrawlForm
         Withdraw: [
           { name: "amount", type: "uint256" },
           { name: "agentId", type: "uint256" },
+          { name: "expireAt", type: "uint256" },
         ]
       }
 
@@ -45,6 +46,7 @@ export const WithdrawlForm = ({ agentId, agentWallet, onSuccess }: WithdrawlForm
       const message = {
         amount: parseEther(data.amount),
         agentId: agentId,
+        expireAt: new Date().getTime() + 5 * 60 * 1000, // 5 minutes
       }
 
       const signature = await signTypedDataAsync({
