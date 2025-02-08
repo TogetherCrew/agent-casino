@@ -10,4 +10,4 @@ import { AgentService } from './agent.service'
     controllers: [AgentController],
     providers: [AgentService],
 })
-export class MpcWalletModule {}
+export class AgentModule {}
