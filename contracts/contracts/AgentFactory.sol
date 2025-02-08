@@ -47,7 +47,7 @@ contract AgentFactory is ERC721, Ownable {
     mapping(address => uint256) public stakedAmount;
 
     // ENS public ens = ENS(0x4cCb0BB02FCABA27e82a56646E81d8c5bC4119a5);
-
+    ENS public ens;
     struct RegisterRequest {
         string name;
         address owner;
