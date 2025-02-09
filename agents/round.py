@@ -130,14 +130,13 @@ class Round:
             contract_address=prediction_contract_address,
             abi=abi,
             method="claim",
-            args={"epochs": epoch},
+            args={"epochs": [epoch]},
         )
         invocation.wait()
 
     def _execute_agent_decision(self, agent: AgentOutput, epoch: int, agent_config: AgentConfig) -> None:
         abi = self.config_fetcher.prediction_abi
         prediction_contract_address = self.config_fetcher.prediction_contract_address
-        # print("||agent_config||", agent_config)
 
         wallet = self._get_wallet(agent_wallet_id=agent_config.walletId)
 
@@ -153,10 +152,9 @@ class Round:
             contract_address=prediction_contract_address,
             abi=abi,
             method=method,
-            args={"epoch": epoch, "thesis": agent.thesis, "value": agent.amount},
+            args={"epoch": epoch, "thesis": agent.thesis, "payable": agent.amount},
         )
         invocation.wait()
 
     def _get_wallet(self, agent_wallet_id: str) -> Wallet:
-        # print(f"agent_wallet_id: {agent_wallet_id}")
         return Wallet.fetch(wallet_id=agent_wallet_id)
