@@ -41,7 +41,7 @@ interface WithdrawTypedData {
 
 // 1) Dummy Private Key: DO NOT use in production
 const DUMMY_PRIVATE_KEY =
-    '0x1111111111111111111111111111111111111111111111111111111111111111'
+    '0x4c1d76fbc8761b5ce8644fe5cf8414bd580340640b62c6025a538a28e6283092f2f'
 
 // Convert the private key into an "Account" object that viem can use
 const account = privateKeyToAccount(DUMMY_PRIVATE_KEY)
@@ -66,7 +66,6 @@ function idToChain(chainId: SupportedChainId) {
 }
 
 const selectedChain = idToChain(84532)
-console.log('Selected chain for 84532 =', selectedChain?.name ?? 'None')
 
 const walletClient = createWalletClient({
     chain: selectedChain, // could be undefined if not found
@@ -92,8 +91,8 @@ async function main() {
         },
         primaryType: 'Withdraw',
         message: {
-            agentId: 123,
-            amount: 10000000000000000n, // e.g. "0.01 ETH" in wei if you interpret it that way
+            agentId: 14,
+            amount: 20000000000000n, // e.g. "0.01 ETH" in wei if you interpret it that way
             expireAt: 1767097847, // Some future timestamp
         },
     }

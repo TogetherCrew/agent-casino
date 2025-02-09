@@ -1,19 +1,13 @@
-// mpc-wallet.service.ts
-import { InjectPinoLogger, PinoLogger } from 'nestjs-pino'
-import { recoverTypedDataAddress } from 'viem'
+import { InjectPinoLogger, PinoLogger } from 'nestjs-pino';
+import { formatUnits, recoverTypedDataAddress } from 'viem';
 
-import {
-    BadRequestException,
-    Injectable,
-    NotFoundException,
-} from '@nestjs/common'
+import { Coinbase } from '@coinbase/coinbase-sdk';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 
-import {
-    AGENT_FACTORY_CONTRACT,
-    AGENT_WALLET_CONTRACT,
-} from '../shared/constants/chain.constants'
-import { SupportedChainId } from '../shared/types/chain.type'
-import { ViemUtilsService } from '../utils/viem.utils.service'
+import { CdpService } from '../cdp/cdp.service';
+import { AGENT_FACTORY_CONTRACT, AGENT_WALLET_CONTRACT } from '../shared/constants/chain.constants';
+import { SupportedChainId } from '../shared/types/chain.type';
+import { ViemUtilsService } from '../utils/viem.utils.service';
 
 interface WithdrawArgs {
     chainId: SupportedChainId
@@ -26,16 +20,16 @@ export class AgentService {
     constructor(
         private readonly viemUtilsService: ViemUtilsService,
         @InjectPinoLogger(AgentService.name)
-        private readonly logger: PinoLogger
+        private readonly logger: PinoLogger,
+        private readonly cdpService: CdpService
     ) {}
 
-    public async getFundingWallet(
-        chainId: SupportedChainId,
-        agentId: number
-    ): Promise<string> {
+    public async getFundingWallet(chainId: SupportedChainId, agentId: number) {
         const walletAddress = await this.getAgentWalletAddress(chainId, agentId)
         const walletId = await this.getAgentWalletId(chainId, walletAddress)
-        return walletId
+        const wallet = await this.cdpService.getWallet(walletId)
+        const defualtAddress = await wallet.getDefaultAddress()
+        return defualtAddress.getId()
     }
 
     public async withdrawFunds({
@@ -56,15 +50,47 @@ export class AgentService {
 
         this.checkSignatureExpiration(typedData)
 
+        const agentId = BigInt(typedData.message.agentId)
+        const publicClient = this.viemUtilsService.getPublicClient(chainId)
+        const agentFactoryConfig = AGENT_FACTORY_CONTRACT[chainId]
+
+        const agentOwner = await publicClient.readContract({
+            address: agentFactoryConfig.address as `0x${string}`,
+            abi: agentFactoryConfig.abi,
+            functionName: 'ownerOf',
+            args: [agentId],
+        })
+
+        if (agentOwner.toLowerCase() !== recoveredAddress.toLowerCase()) {
+            throw new BadRequestException(
+                'Signer is not the owner of the agent'
+            )
+        }
+
         const walletAddress = await this.getAgentWalletAddress(
             chainId,
             typedData.message.agentId
         )
         const walletId = await this.getAgentWalletId(chainId, walletAddress)
+        const wallet = await this.cdpService.getWallet(walletId)
+        const defualtAddress = await wallet.getDefaultAddress()
 
-        return walletId
+        const balance = await defualtAddress.getBalance(Coinbase.assets.Eth)
+        const requestAmountEther = parseFloat(
+            formatUnits(BigInt(typedData.message.amount), 18)
+        )
+        if (requestAmountEther > Number(balance)) {
+            throw new BadRequestException(
+                'Request amount is less than current balance'
+            )
+        }
+
+        const tnx = await this.cdpService.createTransfer(
+            wallet,
+            recoveredAddress
+        )
+        return tnx.getTransactionHash()
     }
-
     private async recoverSigner(
         typedData: any,
         signature: `0x${string}`
@@ -156,5 +182,32 @@ export class AgentService {
         }
 
         return walletId
+    }
+
+    public async updateAgentWalletId(
+        chainId: SupportedChainId,
+        agentId: number,
+        newWalletId: string
+    ): Promise<string> {
+        const walletClient = this.viemUtilsService.getWalletClient(chainId)
+
+        const factoryConfig = AGENT_FACTORY_CONTRACT[chainId]
+
+        try {
+            const txHash = await walletClient.writeContract({
+                address: factoryConfig.address as `0x${string}`,
+                abi: factoryConfig.abi,
+                functionName: 'updateWalletId',
+                args: [BigInt(agentId), newWalletId],
+            })
+            return txHash
+        } catch (error) {
+            console.log(error)
+            this.logger.error(
+                { error },
+                'Failed to update agent walletId on chain'
+            )
+            throw error
+        }
     }
 }

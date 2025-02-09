@@ -20,12 +20,12 @@ export class AgentController {
         type: FundingWalletResponse,
     })
     async getFundingWallet(@Param() fundingWalletDto: FundingWalletDto) {
-        const walletId = await this.agentService.getFundingWallet(
+        const fundingAddress = await this.agentService.getFundingWallet(
             fundingWalletDto.chainId,
             fundingWalletDto.agentId
         )
 
-        return { walletId }
+        return { fundingAddress }
     }
 
     @Post(':chainId/:agentId/withdraw')

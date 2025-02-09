@@ -2,7 +2,8 @@ export const SUPPORTED_CHAINS = [84532]
 
 export const CHAINS = {
     84532: {
-        rpcURL: 'https://sepolia.base.org',
+        HTTPRpcURL: 'https://sepolia.base.org',
+        WsRpcURL: 'wss://base-sepolia-rpc.publicnode.com',
     },
 }
 export const AGENT_FACTORY_CONTRACT = {

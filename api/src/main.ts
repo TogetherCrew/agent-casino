@@ -1,14 +1,14 @@
-import * as compression from 'compression';
-import helmet from 'helmet';
-import { Logger, LoggerErrorInterceptor } from 'nestjs-pino';
+import * as compression from 'compression'
+import helmet from 'helmet'
+import { Logger, LoggerErrorInterceptor } from 'nestjs-pino'
 
-import { ValidationPipe, VersioningType } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
-import { NestFactory } from '@nestjs/core';
+import { ValidationPipe, VersioningType } from '@nestjs/common'
+import { ConfigService } from '@nestjs/config'
+import { NestFactory } from '@nestjs/core'
 
-import { AppModule } from './app.module';
-import { setupSwagger } from './doc';
-import { HttpExceptionFilter } from './shared/filters/http-exception.filter';
+import { AppModule } from './app.module'
+import { setupSwagger } from './doc'
+import { HttpExceptionFilter } from './shared/filters/http-exception.filter'
 
 async function bootstrap() {
     const app = await NestFactory.create(AppModule, { bufferLogs: true })
