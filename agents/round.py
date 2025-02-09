@@ -148,14 +148,12 @@ class Round:
         elif agent.decision.value == DecisionEnum.SKIP.value:
             return
 
-        print("agent.amount", agent.amount)
         invocation = wallet.invoke_contract(
             contract_address=prediction_contract_address,
             abi=abi,
             method=method,
-            # args={"epoch": int(epoch), "thesis": agent.thesis, "value": 0},
             args={"epoch": str(epoch), "thesis": agent.thesis},
-            amount="0.00000001",
+            amount=str(agent.amount),
             asset_id="eth",
         )
         invocation.wait()
