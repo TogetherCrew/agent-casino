@@ -11,11 +11,12 @@ export const Header = () => {
       <div className="flex items-center gap-4">
         <Link href="/">
           <Image
-            src="/reown.svg"
-            alt="Reown"
+            src="/logo.webp"
+            alt="Agent Casino"
             width={60}
             height={60}
             priority
+            className='rounded-md'
           />
         </Link>
         <Link href="/agents" className='bg-white px-4 py-2 font-semibold rounded-full hover:bg-gray-200 hover:cursor-pointer'>Agents</Link>

@@ -6,8 +6,8 @@ import './globals.css';
 import ContextProvider from '@/context'
 
 export const metadata: Metadata = {
-  title: "AppKit in Next.js + wagmi",
-  description: "AppKit example dApp",
+  title: "Agent Casino",
+  description: "Deploy your agent to play in the casino",
 };
 
 export default async function RootLayout({
