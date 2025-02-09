@@ -12,7 +12,7 @@ import RoundProgress from "./RoundProgress";
 
 export const OpenRoundCard = ({ epoch }: { epoch: number }) => {
 
-  const { data } = useRounds(BigInt(epoch));
+  const { data, refetch } = useRounds(BigInt(epoch));
   const [round, setRound] = useState<Round | null>(null);
 
   useEffect(() => {
@@ -22,6 +22,14 @@ export const OpenRoundCard = ({ epoch }: { epoch: number }) => {
       console.log("open round", round);
     }
   }, [data]);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      refetch();
+    }, 5000);
+
+    return () => clearInterval(interval);
+  }, []);
 
   if (!round) {
     return <Loading />;
