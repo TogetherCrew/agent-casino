@@ -1,3 +1,4 @@
+import asyncio
 import json
 import logging
 
@@ -96,14 +97,14 @@ class FetchConfigs:
                 )
 
                 bio = agent_contract.functions.bio.call()
-                coin_base_wallet_id = agent_contract.functions.walletId.call()
+                wallet_id = agent_contract.functions.walletId.call()
                 name = agent_contract.functions.name.call()
 
                 # prepare the agent
                 agent = AgentConfig(
                     name=name,
                     bio=bio,
-                    coinBaseWalletId=coin_base_wallet_id,
+                    walletId=wallet_id,
                     address=address,
                 )
                 agents.append(agent)
@@ -111,6 +112,50 @@ class FetchConfigs:
                 logging.error(f"Error while fetching the agent id: {tokenId}! {exp}")
 
         return agents
+
+    async def fetch_agents_concurrently(self) -> list[AgentConfig]:
+        """
+        Example that fetches each agent in parallel using asyncio.gather.
+        """
+        # get token count
+        token_counter = await asyncio.to_thread(self._fetch_token_id_counter)
+
+        # create tasks for each agent
+        tasks = []
+        for tokenId in range(1, token_counter):
+            tasks.append(asyncio.create_task(self._fetch_one_agent(tokenId)))
+
+        # gather tasks concurrently
+        results = await asyncio.gather(*tasks, return_exceptions=True)
+
+        agents = []
+        for idx, result in enumerate(results, start=1):
+            if isinstance(result, Exception):
+                logging.error(f"Error while fetching agent id: {idx}! {result}")
+            else:
+                agents.append(result)
+        return agents
+
+    async def _fetch_one_agent(self, tokenId: int) -> AgentConfig:
+        """
+        Async helper method to fetch one agent. Wraps sync calls with to_thread.
+        """
+        logging.info(f"Fetching agent contract {tokenId}!")
+        address = await asyncio.to_thread(
+            self.agent_factory_contract.functions.agentWallets(tokenId).call
+        )
+        agent_contract = self.w3.eth.contract(address=address, abi=self.agent_abi)
+
+        bio = await asyncio.to_thread(agent_contract.functions.bio().call)
+        wallet_id = await asyncio.to_thread(agent_contract.functions.walletId().call)
+        name = await asyncio.to_thread(agent_contract.functions.name().call)
+
+        return AgentConfig(
+            name=name,
+            bio=bio,
+            walletId=wallet_id,
+            address=address,
+        )
 
     def _fetch_token_id_counter(self) -> int:
         token_counter: int = (

@@ -3,12 +3,12 @@
     {
       "name": "John Doe",
       "bio": "You are an expert in market trends and stock price analysis with a keen eye for financial indicators.",
-      "coinBaseWalletId": 0
+      "walletId": 0
     },
     {
       "name": "Jane Doe",
       "bio": "You have years of experience in breaking news and investigative journalism, with a knack for identifying key information quickly.",
-      "coinBaseWalletId": 0
+      "walletId": 0
     }
   ]
 }

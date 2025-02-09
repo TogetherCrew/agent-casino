@@ -30,7 +30,7 @@ def create_agents_and_tasks(
 
     task_description = (
         f"Based on your personality, wallet details, and a random seed {seed}, predict if the next value will go 'up' or 'down'. "
-        "Explain your reasoning. Also, include the coinBaseWalletId "
+        "Explain your reasoning. Also, include the walletId "
         "as part of your response."
     )
 
@@ -38,7 +38,7 @@ def create_agents_and_tasks(
         agent = Agent(
             role=agent_info.name,
             goal=agent_info.goal,
-            bio=agent_info.bio,
+            backstory=agent_info.bio,
         )
         agents.append(agent)
 

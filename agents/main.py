@@ -5,6 +5,7 @@ from crewai import Agent, Crew, Task
 from crewai.crews.crew_output import CrewOutput
 from dotenv import load_dotenv
 
+from round import Round
 from utils.configs import FetchConfigs
 from utils.define_crews import create_agents_and_tasks
 from utils.prices import FetchHistoricalPrices
@@ -50,18 +51,20 @@ def main():
     """
     load_dotenv()
 
-    # Load agent configuration from a JSON file.
-    agent_configs = FetchConfigs().fetch_agents()
+    # agent_configs = asyncio.run(FetchConfigs().fetch_agents_concurrently())
 
     # Create agents and tasks related to each
-    agents, tasks = create_agents_and_tasks(agent_configs)
+    # agents, tasks = create_agents_and_tasks(agent_configs)
 
     # Define input data for tasks
     # return dict timestamps and prices for each
-    input_data = FetchHistoricalPrices().fetch()
+    # input_data = FetchHistoricalPrices().fetch()
 
     # Run the asynchronous crew execution.
-    asyncio.run(execute_crews(agents, tasks, input_data))
+    # asyncio.run(execute_crews(agents, tasks, input_data))
+
+    round = Round()
+    round.start()
 
 
 if __name__ == "__main__":

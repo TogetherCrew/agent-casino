@@ -1,4 +1,5 @@
 import asyncio
+import logging
 
 from cdp import Wallet
 from crewai import Agent, Crew, Task
@@ -13,11 +14,12 @@ class Round:
     def __init__(self):
         self.config_fetcher = FetchConfigs()
 
-    def start(self, agents: list[AgentConfig]):
+    def start(self):
         """
         start executing a voting round
         """
-        agents = self.config_fetcher.fetch_agents()
+        agents = asyncio.run(self.config_fetcher.fetch_agents_concurrently())
+        # agents = self.config_fetcher.fetch_agents()
 
         w3 = self.config_fetcher.w3
 
@@ -37,10 +39,10 @@ class Round:
                 claim_epoch = current_epoch - 1
 
                 self._execute_agent_claim_tx(agent=agent, epoch=current_epoch - 1)
-                print(f"Claimed for epoch {claim_epoch - 1}!")
+                logging.info(f"Claimed for epoch {claim_epoch - 1}!")
 
-                wallet = self._get_wallet(agent_wallet_id=agent.coinBaseWalletId)
-                agent.balance = wallet.balance('eth')
+                wallet = self._get_wallet(agent_wallet_id=agent.walletId)
+                agent.balance = wallet.balance("eth")
 
         crewai_agents, crewai_tasks = create_agents_and_tasks(agent_configs=agents)
         agents_decision = asyncio.run(
@@ -50,7 +52,6 @@ class Round:
         self.execute_decisions(
             current_epoch=current_epoch,
             agents_output=agents_decision,
-            prediction_contract=prediction_contract,
         )
 
     def _prepare_round_data(self, data: list[int | bool]) -> RoundData:
@@ -80,7 +81,7 @@ class Round:
 
     async def execute_crews(
         self, agents: list[Agent], tasks: list[Task]
-    ) -> list[AgentOutput]:
+    ) -> list[CrewOutput]:
         """
         Execute the crew's tasks asynchronously with the provided input data.
 
@@ -103,19 +104,25 @@ class Round:
     def execute_decisions(
         self,
         current_epoch: int,
-        agents_output: list[AgentOutput],
+        agents_output: list[CrewOutput],
     ) -> None:
         for agent in agents_output:
-            self._execute_agent_decision(
-                current_epoch=agent,
-                epoch=current_epoch,
-            )
+            agent_output: AgentOutput = agent.pydantic
+            try:
+                self._execute_agent_decision(
+                    agent=agent_output,
+                    epoch=current_epoch,
+                )
+            except Exception as exp:
+                logging.error(
+                    f"Errors while executing decision for agent {agent_output.walletId} decision. Exp: {exp}"
+                )
 
     def _execute_agent_claim_tx(self, agent: AgentConfig, epoch: int):
         # prediction contract's ABI
         abi = self.config_fetcher.prediction_abi
         prediction_contract_address = self.config_fetcher.prediction_contract_address
-        wallet = self._get_wallet(agent_wallet_id=agent.coinBaseWalletId)
+        wallet = self._get_wallet(agent_wallet_id=agent.walletId)
 
         invocation = wallet.invoke_contract(
             contract_address=prediction_contract_address,
@@ -128,7 +135,8 @@ class Round:
     def _execute_agent_decision(self, agent: AgentOutput, epoch: int) -> None:
         abi = self.config_fetcher.prediction_abi
         prediction_contract_address = self.config_fetcher.prediction_contract_address
-        wallet = self._get_wallet(agent_wallet_id=agent.wallet_id)
+
+        wallet = self._get_wallet(agent_wallet_id=agent.walletId)
 
         method: str
         if agent.decision.value == DecisionEnum.BEAR.value:
@@ -148,12 +156,3 @@ class Round:
 
     def _get_wallet(self, agent_wallet_id: str) -> Wallet:
         return Wallet.fetch(wallet_id=agent_wallet_id)
-        # addresses = Wallet.fetch(wallet_id=agent_wallet_id).addresses
-
-        # wallet_address: str
-        # for adr in addresses:
-        #     if adr.network_id == "base-sepolia":
-        #         wallet_address = adr.address_id
-        #         break
-
-        # return wallet_address

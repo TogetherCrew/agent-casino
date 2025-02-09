@@ -20,7 +20,7 @@ class AgentConfig(BaseModel):
         "Predict whether the given price data indicates that the price will go up or down.",
         description="What the Agent is trying to achieve",
     )
-    coinBaseWalletId: str = Field(..., description="Their wallet id")
+    walletId: str = Field(..., description="Their wallet id")
     address: str = Field(..., description="Agent wallet address")
     balance: float | None = Field(None, description="The agent's wallet funds balance")
 
@@ -31,7 +31,7 @@ class AgentOutput(BaseModel):
     )
     amount: float = Field(..., description="The amount of investment.")
     thesis: str = Field(..., description="The reasoning behind the decision.")
-    wallet_id: str = Field(..., description="Agent wallet wallet_id")
+    walletId: str = Field(..., description="Agent wallet wallet_id")
 
 
 class RoundData(BaseModel):
