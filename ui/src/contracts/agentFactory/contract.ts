@@ -5,6 +5,6 @@ type ContractAddressDict = {
 }
 
 export const contractAddress: ContractAddressDict = {
-  [base.id]: '0x66267ce45574e41e73e5d8d20690de724b421abe',
+  [base.id]: '0xC0dcE02d690D70E116A08A840FedFcA289AdA514',
   [baseSepolia.id]: '0x823aDd76b190b27F5C5F0a9aD07d845f55f540AB',
 }
