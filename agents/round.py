@@ -152,7 +152,7 @@ class Round:
             contract_address=prediction_contract_address,
             abi=abi,
             method=method,
-            args={"epoch": epoch, "thesis": agent.thesis, "payable": agent.amount},
+            args={"epoch": int(epoch), "thesis": agent.thesis},
         )
         invocation.wait()
 
