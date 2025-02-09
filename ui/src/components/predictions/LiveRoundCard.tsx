@@ -25,7 +25,7 @@ export const LiveRoundCard = ({ epoch }: { epoch: number }) => {
     }, 5000);
 
     return () => clearInterval(interval);
-  }, []);
+  }, [refetch]);
 
   useEffect(() => {
     if (data) {

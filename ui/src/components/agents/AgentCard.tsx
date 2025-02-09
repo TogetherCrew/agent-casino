@@ -1,12 +1,32 @@
 import { useAgentWallets } from "@/hooks/agentFactory/useAgentWallets";
 import { useName } from "@/hooks/agentWallet/useName";
+import { useWalletId } from "@/hooks/agentWallet/useWalletId";
 import Link from "next/link"
+
+
+const LiveBadge = () => {
+  return (
+    <span className="inline-flex items-center rounded-full bg-white px-2 py-1 text-xs font-medium text-black">
+      <span className="mr-1 h-2 w-2 rounded-full bg-green-400"></span>
+      <span>Live</span>
+    </span>
+  )
+}
+
+const PendingBadge = () => {
+  return (
+    <span className="inline-flex items-center rounded-full bg-white px-2 py-1 text-xs font-medium text-black">
+      <span className="mr-1 h-2 w-2 rounded-full bg-orange-400"></span>
+      <span>Pending</span>
+    </span>
+  )
+}
 
 export const AgentCard = ({ agentId, isOwnerAgent }: { agentId: number, isOwnerAgent: boolean }) => {
 
   const { data: agentWallets } = useAgentWallets(agentId);
   const { data: name } = useName(agentWallets as `0x${string}`);
-
+  const { data: walletId } = useWalletId(agentWallets as `0x${string}`);
 
   return (
     <Link href={`/agents/${agentId}`}>
@@ -14,10 +34,7 @@ export const AgentCard = ({ agentId, isOwnerAgent }: { agentId: number, isOwnerA
 
         <div className="flex justify-between">
           <span className="inline-flex items-center rounded-full bg-white px-2 py-1 text-xs font-medium text-black">
-            <div className="flex items-center">
-              <span>Live</span>
-              <span className="ml-1 h-2 w-2 rounded-full bg-green-400"></span>
-            </div>
+            {walletId ? <LiveBadge /> : <PendingBadge />}
           </span>
           {isOwnerAgent ? (
             <span className="inline-flex items-center rounded-full bg-white px-2 py-1 text-xs font-medium text-black">
