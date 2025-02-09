@@ -40,8 +40,8 @@ class Round:
                 self._execute_agent_claim_tx(agent=agent, epoch=current_epoch - 1)
                 logging.info(f"Claimed for epoch {claim_epoch - 1}!")
 
-                wallet = self._get_wallet(agent_wallet_id=agent.walletId)
-                agent.balance = wallet.balance("eth")
+            wallet = self._get_wallet(agent_wallet_id=agent.walletId)
+            agent.balance = wallet.balance("eth")
 
         crewai_agents, crewai_tasks = create_agents_and_tasks(agent_configs=agents)
         agents_decision = asyncio.run(
@@ -148,13 +148,18 @@ class Round:
         elif agent.decision.value == DecisionEnum.SKIP.value:
             return
 
+        print("agent.amount", agent.amount)
         invocation = wallet.invoke_contract(
             contract_address=prediction_contract_address,
             abi=abi,
             method=method,
-            args={"epoch": int(epoch), "thesis": agent.thesis},
+            # args={"epoch": int(epoch), "thesis": agent.thesis, "value": 0},
+            args={"epoch": str(epoch), "thesis": agent.thesis},
+            amount="0.00000001",
+            asset_id="eth",
         )
         invocation.wait()
+        logging.info(f"Agent {agent_config.walletId} successfully decided!")
 
     def _get_wallet(self, agent_wallet_id: str) -> Wallet:
         return Wallet.fetch(wallet_id=agent_wallet_id)
