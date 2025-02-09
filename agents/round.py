@@ -19,7 +19,6 @@ class Round:
         start executing a voting round
         """
         agents = asyncio.run(self.config_fetcher.fetch_agents_concurrently())
-        # agents = self.config_fetcher.fetch_agents()
 
         w3 = self.config_fetcher.w3
 
@@ -52,6 +51,7 @@ class Round:
         self.execute_decisions(
             current_epoch=current_epoch,
             agents_output=agents_decision,
+            agent_configs=agents,
         )
 
     def _prepare_round_data(self, data: list[int | bool]) -> RoundData:
@@ -105,17 +105,19 @@ class Round:
         self,
         current_epoch: int,
         agents_output: list[CrewOutput],
+        agent_configs: list[AgentConfig],
     ) -> None:
-        for agent in agents_output:
+        for idx, agent in enumerate(agents_output):
             agent_output: AgentOutput = agent.pydantic
             try:
                 self._execute_agent_decision(
                     agent=agent_output,
                     epoch=current_epoch,
+                    agent_config=agent_configs[idx],
                 )
             except Exception as exp:
                 logging.error(
-                    f"Errors while executing decision for agent {agent_output.walletId} decision. Exp: {exp}"
+                    f"Errors while executing decision for agent {agent_configs[idx].walletId} decision. Exp: {exp}"
                 )
 
     def _execute_agent_claim_tx(self, agent: AgentConfig, epoch: int):
@@ -132,11 +134,12 @@ class Round:
         )
         invocation.wait()
 
-    def _execute_agent_decision(self, agent: AgentOutput, epoch: int) -> None:
+    def _execute_agent_decision(self, agent: AgentOutput, epoch: int, agent_config: AgentConfig) -> None:
         abi = self.config_fetcher.prediction_abi
         prediction_contract_address = self.config_fetcher.prediction_contract_address
+        # print("||agent_config||", agent_config)
 
-        wallet = self._get_wallet(agent_wallet_id=agent.walletId)
+        wallet = self._get_wallet(agent_wallet_id=agent_config.walletId)
 
         method: str
         if agent.decision.value == DecisionEnum.BEAR.value:
@@ -155,4 +158,5 @@ class Round:
         invocation.wait()
 
     def _get_wallet(self, agent_wallet_id: str) -> Wallet:
+        # print(f"agent_wallet_id: {agent_wallet_id}")
         return Wallet.fetch(wallet_id=agent_wallet_id)

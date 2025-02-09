@@ -1,7 +1,7 @@
 from enum import Enum
 
-from cdp import Wallet
 from pydantic import BaseModel, Field
+from crewai.crews.crew_output import CrewOutput
 
 
 class DecisionEnum(str, Enum):
@@ -31,7 +31,6 @@ class AgentOutput(BaseModel):
     )
     amount: float = Field(..., description="The amount of investment.")
     thesis: str = Field(..., description="The reasoning behind the decision.")
-    walletId: str = Field(..., description="Agent wallet wallet_id")
 
 
 class RoundData(BaseModel):

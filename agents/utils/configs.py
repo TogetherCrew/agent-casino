@@ -97,14 +97,13 @@ class FetchConfigs:
                 )
 
                 bio = agent_contract.functions.bio.call()
-                wallet_id = agent_contract.functions.walletId.call()
+                # wallet_id = agent_contract.functions.walletId.call()
                 name = agent_contract.functions.name.call()
 
                 # prepare the agent
                 agent = AgentConfig(
                     name=name,
                     bio=bio,
-                    walletId=wallet_id,
                     address=address,
                 )
                 agents.append(agent)
