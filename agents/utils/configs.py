@@ -121,7 +121,7 @@ class FetchConfigs:
 
         # create tasks for each agent
         tasks = []
-        for tokenId in range(1, token_counter):
+        for tokenId in range(1, token_counter + 1):
             tasks.append(asyncio.create_task(self._fetch_one_agent(tokenId)))
 
         # gather tasks concurrently
