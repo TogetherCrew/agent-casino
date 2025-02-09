@@ -2,6 +2,8 @@ import { InjectPinoLogger, PinoLogger } from 'nestjs-pino'
 
 import { Injectable, OnModuleDestroy, OnModuleInit } from '@nestjs/common'
 
+// import your CDP service
+import { CdpService } from '../cdp/cdp.service' // adjust path if necessary
 import { AGENT_FACTORY_CONTRACT } from '../shared/constants/chain.constants'
 import { SupportedChainId } from '../shared/types/chain.type'
 import { ViemUtilsService } from '../utils/viem.utils.service'
@@ -15,7 +17,8 @@ export class AgentFactoryListenerService
     constructor(
         private readonly viemUtilsService: ViemUtilsService,
         @InjectPinoLogger(AgentFactoryListenerService.name)
-        private readonly logger: PinoLogger
+        private readonly logger: PinoLogger,
+        private readonly cdpService: CdpService // <-- inject CdpService here
     ) {}
 
     onModuleInit() {
@@ -27,8 +30,8 @@ export class AgentFactoryListenerService
             abi: AGENT_FACTORY_CONTRACT[chainId].abi,
             eventName: 'AgentCreated',
 
-            onLogs: (logs) => {
-                logs.forEach((log) => {
+            onLogs: async (logs) => {
+                for (const log of logs) {
                     this.logger.info(
                         {
                             agentId: log.args.agentId.toString(),
@@ -40,7 +43,21 @@ export class AgentFactoryListenerService
                         },
                         'AgentCreated event received'
                     )
-                })
+
+                    try {
+                        // Simply create the MPC wallet
+                        const wallet = await this.cdpService.createMpcWallet()
+                        this.logger.info(
+                            { wallet },
+                            'Successfully created MPC wallet for new Agent'
+                        )
+                    } catch (error) {
+                        this.logger.error(
+                            { error },
+                            'Error while creating MPC wallet for AgentCreated event'
+                        )
+                    }
+                }
             },
 
             onError: (error) => {

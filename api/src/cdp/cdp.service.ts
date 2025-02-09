@@ -8,24 +8,27 @@ import { ConfigService } from '@nestjs/config'
 export class CdpService {
     constructor(
         private readonly configService: ConfigService,
-
         @InjectPinoLogger(CdpService.name)
         private readonly logger: PinoLogger
     ) {}
-    public async test() {
+
+    public async createMpcWallet() {
         try {
             const apiKeyName = this.configService.get<string>('cdp.apiKeyName')
-
             const privateKey = this.configService.get<string>('cdp.privateKey')
 
             Coinbase.configure({
-                apiKeyName: apiKeyName,
-                privateKey: privateKey,
+                apiKeyName,
+                privateKey,
             })
+
             const wallet = await Wallet.create()
-            console.log(wallet)
+            this.logger.info({ wallet }, 'MPC wallet created')
+
+            return wallet
         } catch (err) {
-            console.log(err)
+            this.logger.error({ err }, 'Failed to create MPC Wallet')
+            throw err
         }
     }
 }
