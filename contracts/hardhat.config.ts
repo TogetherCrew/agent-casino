@@ -36,6 +36,7 @@ const config: HardhatUserConfig = {
   etherscan: {
     apiKey: {
       baseSepolia: BASESCAN_API_KEY,
+      base: BASESCAN_API_KEY,
     },
   },
 };
