@@ -100,16 +100,12 @@ class FetchConfigs:
                 coin_base_wallet_id = agent_contract.functions.walletId.call()
                 name = agent_contract.functions.name.call()
 
-                # Fetch wallets
-                wallet = Wallet.fetch(address)
-
                 # prepare the agent
                 agent = AgentConfig(
                     name=name,
                     bio=bio,
                     coinBaseWalletId=coin_base_wallet_id,
                     address=address,
-                    wallet=wallet,
                 )
                 agents.append(agent)
             except Exception as exp:

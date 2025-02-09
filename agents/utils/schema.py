@@ -31,7 +31,6 @@ class AgentConfig(BaseModel):
     coinBaseWalletId: str = Field(..., description="Their wallet id")
     address: str = Field(..., description="Agent wallet address")
     balance: float | None = Field(None, description="The agent's wallet funds balance")
-    wallet: Wallet | None = Field(None, description="The cdp wallet object.")
 
 
 class RoundData(BaseModel):

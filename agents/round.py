@@ -22,10 +22,7 @@ class Round:
         """
         agents = self.config_fetcher.fetch_agents()
 
-        # TODO: use the below in future
-        # w3 = self.config_fetcher.w3
-
-        w3 = self._define_w3_provider()
+        w3 = self.config_fetcher.w3
 
         prediction_contract = w3.eth.contract(
             address=self.config_fetcher.prediction_contract_address,
@@ -71,19 +68,6 @@ class Round:
             agents_output=agents_decision,
             prediction_contract=prediction_contract,
         )
-
-    def _define_w3_provider(self) -> Web3:
-        """
-        TODO: REMOVE IN FUTURE.
-        In our case, our web3 provider would be the same for prediction and other contracts.
-        """
-        provider = os.getenv("PREDICTION_CONTRACT_WEB3_PROVIDER")
-        if not provider:
-            raise ValueError(
-                "`PREDICTION_CONTRACT_WEB3_PROVIDER` not provided in envs."
-            )
-        w3 = Web3(provider=provider)
-        return w3
 
     def _prepare_round_data(self, data: list[int | bool]) -> RoundData:
         round_data = RoundData(
