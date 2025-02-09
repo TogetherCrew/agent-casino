@@ -1,5 +1,6 @@
 from enum import Enum
 
+from cdp import Wallet
 from pydantic import BaseModel, Field
 
 
@@ -18,17 +19,19 @@ class AgentOutput(BaseModel):
 
 
 class AgentConfig(BaseModel):
+    model_config = {"arbitrary_types_allowed": True}
     name: str = Field(
         ..., description="The name of an Agent. Could also represent the role."
     )
     bio: str = Field(..., description="The bio of what the Agent should be.")
     goal: str = Field(
-        ...,
+        "Predict whether the given price data indicates that the price will go up or down.",
         description="What the Agent is trying to achieve",
     )
-    coinBaseWalletId: float = Field(..., description="Their wallet id")
+    coinBaseWalletId: str = Field(..., description="Their wallet id")
     address: str = Field(..., description="Agent wallet address")
     balance: float | None = Field(None, description="The agent's wallet funds balance")
+    wallet: Wallet | None = Field(None, description="The cdp wallet object.")
 
 
 class RoundData(BaseModel):

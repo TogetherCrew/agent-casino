@@ -1,7 +1,7 @@
 import json
 import logging
 
-from cdp import Cdp
+from cdp import Cdp, Wallet
 from web3 import Web3
 from web3.contract import Contract
 
@@ -86,39 +86,34 @@ class FetchConfigs:
 
         agents: list[AgentConfig] = []
         for tokenId in range(1, token_counter):
-            logging.info(f"Fetching agent contract {tokenId}/{token_counter}!")
+            try:
+                logging.info(f"Fetching agent contract {tokenId}/{token_counter - 1}!")
 
-            address = self.agent_factory_contract.functions.agentWallets(tokenId).call()
-            agent_contract = self.w3.eth.contract(address=address, abi=self.agent_abi)
+                address = self.agent_factory_contract.functions.agentWallets(
+                    tokenId
+                ).call()
+                agent_contract = self.w3.eth.contract(
+                    address=address, abi=self.agent_abi
+                )
 
-            bio = agent_contract.functions.bio.call()
-            coin_base_wallet_id = agent_contract.functions.coin_base_wallet_id.call()
-            name = agent_contract.functions.name.call()
+                bio = agent_contract.functions.bio.call()
+                coin_base_wallet_id = agent_contract.functions.walletId.call()
+                name = agent_contract.functions.name.call()
 
-            # Fetch wallets
-            # wallet = Wallet.fetch(address)
+                # Fetch wallets
+                wallet = Wallet.fetch(address)
 
-            # prepare the agent
-            agent = AgentConfig(
-                name=name,
-                bio=bio,
-                coinBaseWalletId=coin_base_wallet_id,
-                address=address,
-            )
-            agents.append(agent)
-
-        # TODO: remove previous codes
-        # for agent_data in data["price_predictor"]:
-        #     agent = AgentConfig(
-        #         name=agent_data["name"],
-        #         bio=agent_data["bio"],
-        #         goal=agent_data.get(
-        #             "goal",
-        #             "Predict whether the given price data indicates that the price will go up or down.",
-        #         ),
-        #         balance=agent_data["balance"],
-        #     )
-        #     agents.append(agent)
+                # prepare the agent
+                agent = AgentConfig(
+                    name=name,
+                    bio=bio,
+                    coinBaseWalletId=coin_base_wallet_id,
+                    address=address,
+                    wallet=wallet,
+                )
+                agents.append(agent)
+            except Exception as exp:
+                logging.error(f"Error while fetching the agent id: {tokenId}! {exp}")
 
         return agents
 

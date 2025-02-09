@@ -44,26 +44,8 @@ class Round:
             if claimable:
                 claim_epoch = current_epoch - 1
 
-                # prediction_contract.functions.claim(claim_epoch)
-
-                # TODO: claim stuff
-                # TODO: WON't Work!
-                agent_wallet = Wallet.fetch(wallet_id=agent.address)
-                # NOT TESTED
-                nounce = w3.eth.get_transaction_count(agent.address)
-                # tx = prediction_contract.functions.claim(claim_epoch).buildTransaction({
-                #     'from': agent.address,
-                #     'nonce': nounce,
-                # })
-                tx_hash = agent_wallet.transact(
-                    {
-                        "to": prediction_contract_address,
-                        "data": data,
-                        # Optionally specify "value", etc.
-                    }
-                )
-                receipt = agent_wallet.provider.wait_for_transaction_receipt(tx_hash)
-                print(f"Claimed for epoch {claim_epoch}, tx receipt: {receipt}")
+                self._execute_agent_claim_tx(agent=agent, epoch=current_epoch - 1)
+                print(f"Claimed for epoch {claim_epoch - 1}!")
 
                 agent_contract = w3.eth.contract(
                     address=agent.address,
@@ -173,3 +155,16 @@ class Round:
                 ).call()
             elif agent.decision.value == DecisionEnum.SKIP.value:
                 pass
+
+    def _execute_agent_claim_tx(self, agent: AgentConfig, epoch: int):
+        # prediction contract's ABI
+        abi = self.config_fetcher.prediction_abi
+        prediction_contract_address = self.config_fetcher.prediction_contract_address
+
+        invocation = agent.wallet.invoke_contract(
+            contract_address=prediction_contract_address,
+            abi=abi,
+            method="claim",
+            args={"to": agent.wallet.addresses, "value": epoch},
+        )
+        invocation.wait()
