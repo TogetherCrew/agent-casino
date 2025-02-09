@@ -54,10 +54,9 @@ class Round:
                 agent.balance = balance
 
         crewai_agents, crewai_tasks = create_agents_and_tasks(agent_configs=agents)
-        input_prices = self.determine_position(current_epoch=current_epoch)
         agents_decision = asyncio.run(
             self.execute_crews(
-                agents=crewai_agents, tasks=crewai_tasks, input_prices=input_prices
+                agents=crewai_agents, tasks=crewai_tasks
             )
         )
 
@@ -95,7 +94,7 @@ class Round:
         raise NotImplementedError
 
     async def execute_crews(
-        self, agents: list[Agent], tasks: list[Task], input_prices: list[dict]
+        self, agents: list[Agent], tasks: list[Task]
     ) -> list[AgentOutput]:
         """
         Execute the crew's tasks asynchronously with the provided input data.
@@ -103,12 +102,11 @@ class Round:
         Args:
             agents (list[Agent]): The list of agents.
             tasks (list[Task]): The list of tasks to execute.
-            input_prices (list[dict]): A list of input dictionaries for prices to be included in tasks.
         """
         results: list[CrewOutput] = []
 
         crew_tasks = [
-            Crew(agents=[agent], tasks=[task]).kickoff_async(inputs=input_prices)
+            Crew(agents=[agent], tasks=[task]).kickoff_async()
             for agent, task in zip(agents, tasks)
         ]
 

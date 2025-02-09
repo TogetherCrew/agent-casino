@@ -1,9 +1,10 @@
 import logging
 
-from crewai import Agent, Crew, Task
+from crewai import Agent, Task
 
 from utils.schema import AgentConfig, AgentOutput
 
+from random import random
 
 def create_agents_and_tasks(
     agent_configs: list[AgentConfig],
@@ -25,8 +26,12 @@ def create_agents_and_tasks(
 
     agents = []
     tasks = []
+    # to be prices in future
+    # or community sentiment, or any other things
+    seed = random()
+
     task_description = (
-        "Given the historical price data {input_prices}, predict if the next value will go 'up' or 'down'. "
+        f"Based on the your personality and a random seed {seed}, predict if the next value will go 'up' or 'down'. "
         "Explain your reasoning."
     )
 
