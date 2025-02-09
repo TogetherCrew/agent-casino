@@ -1,6 +1,4 @@
 import asyncio
-import os
-from typing import Any
 
 from cdp import Wallet
 from crewai import Agent, Crew, Task
