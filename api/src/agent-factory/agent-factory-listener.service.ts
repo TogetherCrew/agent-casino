@@ -1,12 +1,12 @@
-import { InjectPinoLogger, PinoLogger } from 'nestjs-pino'
+import { InjectPinoLogger, PinoLogger } from 'nestjs-pino';
 
-import { Injectable, OnModuleDestroy, OnModuleInit } from '@nestjs/common'
+import { Injectable, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
 
-import { AgentService } from '../agent/agent.service'
-import { CdpService } from '../cdp/cdp.service'
-import { AGENT_FACTORY_CONTRACT } from '../shared/constants/chain.constants'
-import { SupportedChainId } from '../shared/types/chain.type'
-import { ViemUtilsService } from '../utils/viem.utils.service'
+import { AgentService } from '../agent/agent.service';
+import { CdpService } from '../cdp/cdp.service';
+import { AGENT_FACTORY_CONTRACT } from '../shared/constants/chain.constants';
+import { SupportedChainId } from '../shared/types/chain.type';
+import { ViemUtilsService } from '../utils/viem.utils.service';
 
 @Injectable()
 export class AgentFactoryListenerService
@@ -23,7 +23,7 @@ export class AgentFactoryListenerService
     ) {}
 
     onModuleInit() {
-        const chainId: SupportedChainId = 84532
+        const chainId: SupportedChainId = 8453
 
         const publicClient = this.viemUtilsService.createWsPublicClient(chainId)
 

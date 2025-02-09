@@ -1,8 +1,8 @@
-import { InjectPinoLogger, PinoLogger } from 'nestjs-pino'
+import { InjectPinoLogger, PinoLogger } from 'nestjs-pino';
 
-import { Amount, Coinbase, Destination, Wallet } from '@coinbase/coinbase-sdk'
-import { Injectable } from '@nestjs/common'
-import { ConfigService } from '@nestjs/config'
+import { Amount, Coinbase, Destination, Wallet } from '@coinbase/coinbase-sdk';
+import { Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class CdpService {
@@ -26,7 +26,7 @@ export class CdpService {
     public async createWallet() {
         try {
             return await Wallet.create({
-                networkId: Coinbase.networks.BaseSepolia,
+                networkId: Coinbase.networks.BaseMainnet,
             })
         } catch (err) {
             this.logger.error({ err }, 'Failed to create MPC Wallet')

@@ -1,15 +1,15 @@
-import { Transform } from 'class-transformer'
-import { IsIn, IsNotEmpty, IsNumber } from 'class-validator'
+import { Transform } from 'class-transformer';
+import { IsIn, IsNotEmpty, IsNumber } from 'class-validator';
 
-import { ApiProperty } from '@nestjs/swagger'
+import { ApiProperty } from '@nestjs/swagger';
 
-import { SUPPORTED_CHAINS } from '../../shared/constants/chain.constants'
+import { SUPPORTED_CHAINS } from '../../shared/constants/chain.constants';
 
 export class FundingWalletDto {
     @Transform(({ value }) => parseInt(value, 10))
     @ApiProperty({
         description: 'Chain Id',
-        example: '84532',
+        example: '8453',
         required: true,
         enum: SUPPORTED_CHAINS,
     })
