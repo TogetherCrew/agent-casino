@@ -7,7 +7,7 @@ import { useEffect, useState } from "react";
 
 export const RoundsGrid = () => {
 
-  const { data, isLoading } = useCurrentEpoch();
+  const { data, refetch, isLoading } = useCurrentEpoch();
   const [epoch, setEpoch] = useState<number>(0);
 
   useEffect(() => {
@@ -16,6 +16,16 @@ export const RoundsGrid = () => {
       setEpoch(Number(data));
     }
   }, [data]);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      refetch();
+      console.log("refetching");
+    }, 5000);
+
+    return () => clearInterval(interval);
+  }, []);
+
 
   if (isLoading) {
     return <Loading />;
