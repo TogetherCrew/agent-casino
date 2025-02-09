@@ -1,0 +1,18 @@
+# .github/workflows/api-ci.yml
+
+name: API CI Pipeline
+
+on:
+  push:
+    paths:
+      - "api/**"
+
+
+jobs:
+  build-push:
+    needs: [lint, test]
+    uses: ./.github/workflows/build-push.yml
+    with:
+      app: "api"
+      context: "./api"
+      dockerfile: "./api/Dockerfile"
