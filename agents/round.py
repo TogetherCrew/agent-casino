@@ -40,7 +40,7 @@ class Round:
                 print(f"Claimed for epoch {claim_epoch - 1}!")
 
                 wallet = self._get_wallet(agent_wallet_id=agent.coinBaseWalletId)
-                agent.balance = wallet.balances()
+                agent.balance = wallet.balance('eth')
 
         crewai_agents, crewai_tasks = create_agents_and_tasks(agent_configs=agents)
         agents_decision = asyncio.run(
@@ -146,14 +146,14 @@ class Round:
         )
         invocation.wait()
 
-    def _get_wallet(self, agent_wallet_id: str) -> str:
-        # return Wallet.fetch(wallet_id=agent_wallet_id)
-        addresses = Wallet.fetch(wallet_id=agent_wallet_id).addresses
+    def _get_wallet(self, agent_wallet_id: str) -> Wallet:
+        return Wallet.fetch(wallet_id=agent_wallet_id)
+        # addresses = Wallet.fetch(wallet_id=agent_wallet_id).addresses
 
-        wallet_address: str
-        for adr in addresses:
-            if adr.network_id == "base-sepolia":
-                wallet_address = adr.address_id
-                break
+        # wallet_address: str
+        # for adr in addresses:
+        #     if adr.network_id == "base-sepolia":
+        #         wallet_address = adr.address_id
+        #         break
 
-        return wallet_address
+        # return wallet_address

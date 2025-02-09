@@ -22,9 +22,9 @@ class Credentials:
         return contract_address
 
     def load_prediction_contract_address(self) -> str:
-        prediction_contract_address = os.getenv("PREDICTION_CONTRACT_WEB3_PROVIDER")
+        prediction_contract_address = os.getenv("PREDICTION_CONTRACT_ADDRESS")
         if prediction_contract_address is None:
-            raise ValueError("PREDICTION_CONTRACT_WEB3_PROVIDER doesn't exist!")
+            raise ValueError("PREDICTION_CONTRACT_ADDRESS doesn't exist!")
 
         return prediction_contract_address
 
