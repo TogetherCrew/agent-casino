@@ -1,5 +1,6 @@
 import asyncio
 import os
+from typing import Any
 
 from cdp import Wallet
 from crewai import Agent, Crew, Task
@@ -8,7 +9,7 @@ from web3 import Web3
 
 from utils.configs import FetchConfigs
 from utils.define_crews import create_agents_and_tasks
-from utils.schema import AgentConfig, AgentOutput, RoundData
+from utils.schema import AgentConfig, AgentOutput, DecisionEnum, RoundData
 
 
 class Round:
@@ -81,8 +82,13 @@ class Round:
             )
         )
 
-        # TODO: What to do with agents position?
-        # Meaning what to write on web3?
+        # Writing decisions on contract
+        # TODO: how to do write operations with cdp????
+        self.execute_decisions(
+            current_epoch=current_epoch,
+            agents_output=agents_decision,
+            prediction_contract=prediction_contract,
+        )
 
     def _define_w3_provider(self) -> Web3:
         """
@@ -144,3 +150,26 @@ class Round:
         results = await asyncio.gather(*crew_tasks)
 
         return results
+
+    def execute_decisions(
+        self,
+        current_epoch: int,
+        agents_output: list[AgentOutput],
+        prediction_contract: Any,
+    ) -> None:
+        for agent in agents_output:
+            if agent.decision.value == DecisionEnum.BEAR.value:
+                # TODO: do a bear decision
+                prediction_contract.functions.betBear(
+                    agent.amount,
+                    current_epoch,
+                    agent.thesis,
+                ).call()
+            elif agent.decision.value == DecisionEnum.BULL.value:
+                prediction_contract.functions.betBull(
+                    agent.amount,
+                    current_epoch,
+                    agent.thesis,
+                ).call()
+            elif agent.decision.value == DecisionEnum.SKIP.value:
+                pass
