@@ -28,7 +28,7 @@ export class AgentController {
         return { fundingAddress }
     }
 
-    @Post(':chainId/:agentId/withdraw')
+    @Post(':chainId/withdraw')
     @ApiOperation({ summary: 'request to withdraw funds.' })
     @ApiOkResponse({
         description: 'Transaction hash.',
