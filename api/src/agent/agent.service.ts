@@ -1,13 +1,20 @@
-import { InjectPinoLogger, PinoLogger } from 'nestjs-pino';
-import { formatUnits, recoverTypedDataAddress } from 'viem';
+import { InjectPinoLogger, PinoLogger } from 'nestjs-pino'
+import { formatUnits, recoverTypedDataAddress } from 'viem'
 
-import { Coinbase } from '@coinbase/coinbase-sdk';
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import { Coinbase } from '@coinbase/coinbase-sdk'
+import {
+    BadRequestException,
+    Injectable,
+    NotFoundException,
+} from '@nestjs/common'
 
-import { CdpService } from '../cdp/cdp.service';
-import { AGENT_FACTORY_CONTRACT, AGENT_WALLET_CONTRACT } from '../shared/constants/chain.constants';
-import { SupportedChainId } from '../shared/types/chain.type';
-import { ViemUtilsService } from '../utils/viem.utils.service';
+import { CdpService } from '../cdp/cdp.service'
+import {
+    AGENT_FACTORY_CONTRACT,
+    AGENT_WALLET_CONTRACT,
+} from '../shared/constants/chain.constants'
+import { SupportedChainId } from '../shared/types/chain.type'
+import { ViemUtilsService } from '../utils/viem.utils.service'
 
 interface WithdrawArgs {
     chainId: SupportedChainId
