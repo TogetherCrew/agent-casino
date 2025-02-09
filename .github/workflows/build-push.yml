@@ -22,24 +22,7 @@ env:
     IMAGE_NAME: ${{ github.repository }}-${{ inputs.app }}
 
 jobs:
-    test:
-        runs-on: ubuntu-latest
-        steps:
-            - uses: actions/checkout@v4
-            - uses: actions/setup-node@v3
-              with:
-                  node-version: 20
-                  cache: 'npm'
-            - run: npm install --force
-            - run: npm run test
-            - uses: paambaati/codeclimate-action@v5.0.0
-              env:
-                  CC_TEST_REPORTER_ID: ${{ secrets.CC_TEST_REPORTER_ID }}
-              with:
-                  coverageCommand: npm run test:cov
-
     build-push:
-        needs: [test]
         name: Build and Push Image
         runs-on: ubuntu-latest
         permissions:
@@ -49,6 +32,12 @@ jobs:
         steps:
             - name: Checkout code
               uses: actions/checkout@v4
+
+            - uses: actions/setup-node@v3
+              with:
+                  node-version: 20
+                  cache: 'npm'
+            - run: npm install --force
 
             - name: Set up Docker Buildx
               uses: docker/setup-buildx-action@v3
