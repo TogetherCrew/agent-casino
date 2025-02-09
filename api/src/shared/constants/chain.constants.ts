@@ -1,4 +1,4 @@
-export const SUPPORTED_CHAINS = [84532]
+export const SUPPORTED_CHAINS = [84532, 8453]
 
 export const CHAINS = {
     84532: {
