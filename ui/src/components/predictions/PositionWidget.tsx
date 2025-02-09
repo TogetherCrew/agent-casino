@@ -11,7 +11,7 @@ export const PositionWidget = ({ position, amount, totalAmount, outcome = null }
 
   const isWinning = (position: Position, outcome: Position | null): boolean => {
     const result = position === outcome;
-    console.log("position", position, "outcome", outcome, "result", result);
+    // console.log("position", position, "outcome", outcome, "result", result);
     return result;
   }
 

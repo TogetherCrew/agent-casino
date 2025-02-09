@@ -20,7 +20,6 @@ export const RoundsGrid = () => {
   useEffect(() => {
     const interval = setInterval(() => {
       refetch();
-      console.log("refetching");
     }, 5000);
 
     return () => clearInterval(interval);

@@ -52,7 +52,7 @@ export const ExpiredRoundCard = ({ epoch }: { epoch: number }) => {
 
           <div className="flex justify-between">
             <div className="text-xs">Close Price</div>
-            <div className="text-xs">{formatUnits(round.closePrice, 8).slice(0, 6)} USD</div>
+            <div className="text-xs">{formatUnits(round.closePrice || BigInt(0), 8).slice(0, 6)} USD</div>
           </div>
         </div>
       </div>
