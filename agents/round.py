@@ -1,8 +1,15 @@
+import asyncio
 import os
 
+from cdp import Wallet
+from crewai import Agent, Crew, Task
+from crewai.crews.crew_output import CrewOutput
 from web3 import Web3
-from utils.schema import AgentConfig, AgentOutput, RoundData
+
 from utils.configs import FetchConfigs
+from utils.define_crews import create_agents_and_tasks
+from utils.schema import AgentConfig, AgentOutput, RoundData
+
 
 class Round:
     def __init__(self):
@@ -13,12 +20,12 @@ class Round:
         start executing a voting round
         """
         agents = self.config_fetcher.fetch_agents()
-        
+
         # TODO: use the below in future
         # w3 = self.config_fetcher.w3
 
         w3 = self._define_w3_provider()
-        
+
         prediction_contract = w3.eth.contract(
             address=self.config_fetcher.prediction_contract_address,
             abi=self.config_fetcher.prediction_abi,
@@ -27,27 +34,55 @@ class Round:
         round_data: list = prediction_contract.functions.rounds(current_epoch).call()
         round_data_obj = self._prepare_round_data(data=round_data)
 
-
+        # Claiming the rewards in this loop
         for agent in agents:
             claimable: bool = prediction_contract.functions.claimable(
-                current_epoch,
-                agent.address
+                current_epoch, agent.address
             ).call()
 
             if claimable:
                 claim_epoch = current_epoch - 1
 
-                prediction_contract.functions.claim(claim_epoch)
+                # prediction_contract.functions.claim(claim_epoch)
 
-                nounce = w3.eth.get_transaction_count(agent.address)
                 # TODO: claim stuff
+                # TODO: WON't Work!
+                agent_wallet = Wallet.fetch(wallet_id=agent.address)
+                # NOT TESTED
+                nounce = w3.eth.get_transaction_count(agent.address)
+                # tx = prediction_contract.functions.claim(claim_epoch).buildTransaction({
+                #     'from': agent.address,
+                #     'nonce': nounce,
+                # })
+                tx_hash = agent_wallet.transact(
+                    {
+                        "to": prediction_contract_address,
+                        "data": data,
+                        # Optionally specify "value", etc.
+                    }
+                )
+                receipt = agent_wallet.provider.wait_for_transaction_receipt(tx_hash)
+                print(f"Claimed for epoch {claim_epoch}, tx receipt: {receipt}")
 
-            # agent_contract = w3.eth.contract(
-            #     address=agent.address,
-            #     abi=self.config_fetcher.agent_abi,
-            # )
+                agent_contract = w3.eth.contract(
+                    address=agent.address,
+                    abi=self.config_fetcher.agent_abi,
+                )
 
+                # TODO: line not tested yet!
+                balance: float = agent_contract.functions.getAgentTokenBalances.call()
+                agent.balance = balance
 
+        crewai_agents, crewai_tasks = create_agents_and_tasks(agent_configs=agents)
+        input_prices = self.determine_position(current_epoch=current_epoch)
+        agents_decision = asyncio.run(
+            self.execute_crews(
+                agents=crewai_agents, tasks=crewai_tasks, input_prices=input_prices
+            )
+        )
+
+        # TODO: What to do with agents position?
+        # Meaning what to write on web3?
 
     def _define_w3_provider(self) -> Web3:
         """
@@ -56,10 +91,12 @@ class Round:
         """
         provider = os.getenv("PREDICTION_CONTRACT_WEB3_PROVIDER")
         if not provider:
-            raise ValueError("`PREDICTION_CONTRACT_WEB3_PROVIDER` not provided in envs.")
+            raise ValueError(
+                "`PREDICTION_CONTRACT_WEB3_PROVIDER` not provided in envs."
+            )
         w3 = Web3(provider=provider)
         return w3
-    
+
     def _prepare_round_data(self, data: list[int | bool]) -> RoundData:
         round_data = RoundData(
             epoch=data[0],
@@ -75,6 +112,35 @@ class Round:
             bearAmount=data[10],
             rewardBaseCalAmount=data[11],
             rewardAmount=data[12],
-            oracleCalled=data[13]
+            oracleCalled=data[13],
         )
         return round_data
+
+    def determine_position(self, current_epoch: int) -> dict[str, str]:
+        """
+        Use Epoch to get OracleIDs and then call oracle to get price for OracleId
+        """
+        raise NotImplementedError
+
+    async def execute_crews(
+        self, agents: list[Agent], tasks: list[Task], input_prices: list[dict]
+    ) -> list[AgentOutput]:
+        """
+        Execute the crew's tasks asynchronously with the provided input data.
+
+        Args:
+            agents (list[Agent]): The list of agents.
+            tasks (list[Task]): The list of tasks to execute.
+            input_prices (list[dict]): A list of input dictionaries for prices to be included in tasks.
+        """
+        results: list[CrewOutput] = []
+
+        crew_tasks = [
+            Crew(agents=[agent], tasks=[task]).kickoff_async(inputs=input_prices)
+            for agent, task in zip(agents, tasks)
+        ]
+
+        # Await all the crews concurrently
+        results = await asyncio.gather(*crew_tasks)
+
+        return results

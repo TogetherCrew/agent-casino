@@ -20,7 +20,7 @@ class Credentials:
             raise ValueError("AGENT_FACTORY_CONTRACT_ADDRESS doesn't exist!")
 
         return contract_address
-    
+
     def load_prediction_contract_address(self) -> str:
         prediction_contract_address = os.getenv("PREDICTION_CONTRACT_WEB3_PROVIDER")
         if prediction_contract_address is None:

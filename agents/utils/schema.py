@@ -21,15 +21,14 @@ class AgentConfig(BaseModel):
     name: str = Field(
         ..., description="The name of an Agent. Could also represent the role."
     )
-    bio: str = Field(
-        ..., description="The bio of what the Agent should be."
-    )
+    bio: str = Field(..., description="The bio of what the Agent should be.")
     goal: str = Field(
         ...,
         description="What the Agent is trying to achieve",
     )
     coinBaseWalletId: float = Field(..., description="Their wallet id")
     address: str = Field(..., description="Agent wallet address")
+    balance: float | None = Field(None, description="The agent's wallet funds balance")
 
 
 class RoundData(BaseModel):

@@ -1,11 +1,12 @@
-import logging
 import json
+import logging
 
 from cdp import Cdp
-from utils.schema import AgentConfig
-from utils.credentials import Credentials
 from web3 import Web3
 from web3.contract import Contract
+
+from utils.credentials import Credentials
+from utils.schema import AgentConfig
 
 
 class FetchConfigs:
@@ -122,7 +123,9 @@ class FetchConfigs:
         return agents
 
     def _fetch_token_id_counter(self) -> int:
-        token_counter: int = self.agent_factory_contract.functions._tokenIdCounter().call()
+        token_counter: int = (
+            self.agent_factory_contract.functions._tokenIdCounter().call()
+        )
         return token_counter
 
     def persist(self, agents_config: list[AgentConfig]):
