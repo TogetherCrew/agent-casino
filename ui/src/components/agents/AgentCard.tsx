@@ -1,7 +1,12 @@
 import { useAgentWallets } from "@/hooks/agentFactory/useAgentWallets";
 import { useName } from "@/hooks/agentWallet/useName";
 import { useWalletId } from "@/hooks/agentWallet/useWalletId";
+import { useAppKitNetwork } from "@reown/appkit/react";
 import Link from "next/link"
+import { useState } from "react";
+import { useEffect } from "react";
+import { formatEther } from "viem";
+import { useBalance } from "wagmi";
 
 
 const LiveBadge = () => {
@@ -27,6 +32,24 @@ export const AgentCard = ({ agentId, isOwnerAgent }: { agentId: number, isOwnerA
   const { data: agentWallets } = useAgentWallets(agentId);
   const { data: name } = useName(agentWallets as `0x${string}`);
   const { data: walletId } = useWalletId(agentWallets as `0x${string}`);
+  const { chainId } = useAppKitNetwork();
+
+  const [fundingAddress, setFundingAddress] = useState<`0x${string}` | null>(null);
+  const { data: balance } = useBalance({ address: fundingAddress as `0x${string}` });
+
+  useEffect(() => {
+    (async () => {
+
+      const fetchFundingWallet = async () => {
+        const response = await fetch(`https://onchain.togethercrew.de/api/v1/mpc-wallet/${chainId}/${agentId}/funding-wallet`);
+        const data = await response.json();
+        return data.fundingAddress;
+      }
+
+      const fundingAddress = await fetchFundingWallet();
+      setFundingAddress(fundingAddress);
+    })();
+  }, [chainId, agentId]);
 
   return (
     <Link href={`/agents/${agentId}`}>
@@ -50,7 +73,7 @@ export const AgentCard = ({ agentId, isOwnerAgent }: { agentId: number, isOwnerA
 
         <div>
           <span className="text-xs text-white">
-            Balance: 0.00 ETH
+            Balance: {formatEther(balance?.value as bigint || BigInt(0)).slice(0, 10)} ETH
           </span>
         </div>
       </div>

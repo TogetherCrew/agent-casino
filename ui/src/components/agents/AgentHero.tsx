@@ -5,11 +5,15 @@ import { Loading } from "../Loading";
 import { OwnerActions } from "./OwnerActions";
 import { CardHeader } from "../card/CardHeader";
 import { Card } from "../card/Card";
+import { useBalance } from "wagmi";
+import { formatEther } from "viem";
 
-export const AgentHero = ({ agentId }: { agentId: number }) => {
+export const AgentHero = ({ agentId, fundingAddress }: { agentId: number, fundingAddress: `0x${string}` }) => {
   const { data: agentWallets } = useAgentWallets(agentId);
   const { data: name } = useName(agentWallets as `0x${string}`);
   const { data: bio } = useBio(agentWallets as `0x${string}`);
+
+  const { data: balance } = useBalance({ address: fundingAddress as `0x${string}` });
 
   if (!agentWallets || !name || !bio) {
     return <Loading />
@@ -34,9 +38,12 @@ export const AgentHero = ({ agentId }: { agentId: number }) => {
           <Card>
             <div className="flex flex-col justify-between gap-4">
               <CardHeader>Balance</CardHeader>
-              <p className="text-2xl font-semibold">0.00 ETH</p>
+              <div className="flex flex-col">
+                <p className="text-2xl font-semibold">{formatEther(balance?.value as bigint || BigInt(0)).slice(0, 10)} ETH</p>
+                <p className="text-xs font-semibold text-gray-400">{fundingAddress}</p>
+              </div>
               <div className="flex gap-2 w-full">
-                <OwnerActions agentId={agentId} />
+                <OwnerActions agentId={agentId} fundingAddress={fundingAddress} />
               </div>
             </div>
           </Card>

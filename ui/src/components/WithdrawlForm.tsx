@@ -2,6 +2,26 @@ import { useForm } from "react-hook-form";
 import { useBalance, useSignTypedData } from "wagmi";
 import { formatEther, parseEther } from "viem";
 import { useEffect } from "react";
+import { useAppKitNetwork } from "@reown/appkit/react";
+
+
+interface WithdrawTypedData {
+  domain: {
+    name: string
+    version: string
+    chainId?: number
+    verifyingContract?: `0x${string}`
+  }
+  types: {
+    Withdraw: { name: string; type: string }[]
+  }
+  primaryType: 'Withdraw'
+  message: {
+    agentId: number
+    amount: bigint
+    expireAt: number
+  }
+}
 
 interface WithdrawlFormProps {
   agentId: number;
@@ -17,6 +37,8 @@ export const WithdrawlForm = ({ agentId, agentWallet, onSuccess }: WithdrawlForm
 
   const isLoading = false
   const isSuccess = false
+
+  const { chainId } = useAppKitNetwork();
 
   const { signTypedDataAsync } = useSignTypedData()
   const {
@@ -51,6 +73,13 @@ export const WithdrawlForm = ({ agentId, agentWallet, onSuccess }: WithdrawlForm
         expireAt: new Date().getTime() + 5 * 60 * 1000, // 5 minutes
       }
 
+      const typedData: WithdrawTypedData = {
+        domain,
+        types,
+        primaryType: 'Withdraw',
+        message
+      }
+
       const signature = await signTypedDataAsync({
         types,
         domain,
@@ -58,8 +87,19 @@ export const WithdrawlForm = ({ agentId, agentWallet, onSuccess }: WithdrawlForm
         primaryType: "Withdraw",
       })
 
-      // TODO: send signature + message to backend
-      console.log(`signature: ${signature}`)
+      const body = JSON.stringify({ signature, message: typedData }, (_, value) =>
+        typeof value === 'bigint' ? value.toString() : value
+      )
+
+      const response = await fetch(`https://onchain.togethercrew.de/api/v1/mpc-wallet/${chainId}/${agentId}/withdraw`, {
+        method: "POST",
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body
+      })
+      const json = await response.json()
+      console.log(`json`, json)
     } catch (error) {
       console.error("Transaction failed:", error);
     }

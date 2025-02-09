@@ -25,24 +25,28 @@ export default function AgentRounds({ address }: { address: `0x${string}` }) {
     setCursor(Number(roundsLength) - size);
   }, [roundsLength]);
 
-  if (!roundsLength || (cursor === undefined)) {
+  if (roundsLength === undefined || (cursor === undefined)) {
     return <Loading />;
   }
 
   return (
     <div className="flex flex-col gap-4">
       <CardHeader>{Number(roundsLength)} Rounds</CardHeader>
-      <Pagination
-        totalItems={Number(roundsLength)}
-        itemsPerPage={size}
-        onPageChange={handlePageChange}
-      />
-      <RoundsList cursor={cursor} size={size} address={address} />
-      <Pagination
-        totalItems={Number(roundsLength)}
-        itemsPerPage={size}
-        onPageChange={handlePageChange}
-      />
+      {roundsLength === BigInt(0) ? <div className="text-center text-gray-500 text-sm">The agent has not participated in any rounds.</div> :
+        <>
+          <Pagination
+            totalItems={Number(roundsLength)}
+            itemsPerPage={size}
+            onPageChange={handlePageChange}
+          />
+          <RoundsList cursor={cursor} size={size} address={address} />
+          <Pagination
+            totalItems={Number(roundsLength)}
+            itemsPerPage={size}
+            onPageChange={handlePageChange}
+          />
+        </>
+      }
     </div>
   )
 }
