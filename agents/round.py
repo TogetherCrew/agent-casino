@@ -1,6 +1,6 @@
-import os
 import asyncio
 import logging
+import os
 
 from cdp import Wallet
 from crewai import Agent, Crew, Task
@@ -19,14 +19,13 @@ class Round:
         game_master_key = os.getenv("GAME_MASTER_PRIVATE_KEY")
         if not game_master_key:
             raise ValueError("GAME_MASTER_PRIVATE_KEY not provided in envs!")
-        
+
         account = self.config_fetcher.w3.eth.account.from_key(game_master_key)
-        
+
         abi = self.config_fetcher.prediction_abi
         prediction_contract_address = self.config_fetcher.prediction_contract_address
         contract = self.config_fetcher.w3.eth.contract(
-            address=prediction_contract_address,
-            abi=abi
+            address=prediction_contract_address, abi=abi
         )
 
         # # Get the current nonce for the account.
@@ -35,26 +34,29 @@ class Round:
 
         # Build the transaction to call executeRound. Adjust chainId, gas, and gasPrice as needed.
         transaction = contract.functions.executeRound().transact(
-        {
-            "from": account.address,
-            # 'chainId': 84532,
-            # 'gas': 30000,               # Gas limit; you may need to estimate or adjust this value
-            # 'gasPrice': self.config_fetcher.w3.to_wei('50', 'gwei'),  # Gas price; adjust based on current network conditions
-            # 'nonce': nonce,
-        }
+            {
+                "from": account.address,
+                # 'chainId': 84532,
+                # 'gas': 30000,               # Gas limit; you may need to estimate or adjust this value
+                # 'gasPrice': self.config_fetcher.w3.to_wei('50', 'gwei'),  # Gas price; adjust based on current network conditions
+                # 'nonce': nonce,
+            }
         )
 
         # --- Sign the Transaction ---
         signed_txn = account.signTransaction(transaction)
 
         # --- Send the Transaction ---
-        tx_hash = self.config_fetcher.w3.eth.send_raw_transaction(signed_txn.rawTransaction)
-        logging.info("Transaction sent! Tx hash:", self.config_fetcher.w3.toHex(tx_hash))
+        tx_hash = self.config_fetcher.w3.eth.send_raw_transaction(
+            signed_txn.rawTransaction
+        )
+        logging.info(
+            "Transaction sent! Tx hash:", self.config_fetcher.w3.toHex(tx_hash)
+        )
 
         # --- (Optional) Wait for the Transaction Receipt ---
         receipt = self.config_fetcher.w3.eth.wait_for_transaction_receipt(tx_hash)
         logging.info("Transaction receipt:", receipt)
-
 
     def start(self):
         """
@@ -176,7 +178,9 @@ class Round:
         )
         invocation.wait()
 
-    def _execute_agent_decision(self, agent: AgentOutput, epoch: int, agent_config: AgentConfig) -> None:
+    def _execute_agent_decision(
+        self, agent: AgentOutput, epoch: int, agent_config: AgentConfig
+    ) -> None:
         abi = self.config_fetcher.prediction_abi
         prediction_contract_address = self.config_fetcher.prediction_contract_address
 

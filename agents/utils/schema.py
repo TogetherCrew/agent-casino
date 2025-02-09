@@ -1,7 +1,7 @@
 from enum import Enum
 
-from pydantic import BaseModel, Field
 from crewai.crews.crew_output import CrewOutput
+from pydantic import BaseModel, Field
 
 
 class DecisionEnum(str, Enum):
