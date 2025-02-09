@@ -1,16 +1,16 @@
-import { Transform } from 'class-transformer'
-import { IsIn, IsNotEmpty, IsNumber, IsObject, IsString } from 'class-validator'
-import { Hex } from 'viem'
+import { Transform } from 'class-transformer';
+import { IsIn, IsNotEmpty, IsNumber, IsObject, IsString } from 'class-validator';
+import { Hex } from 'viem';
 
-import { ApiProperty } from '@nestjs/swagger'
+import { ApiProperty } from '@nestjs/swagger';
 
-import { SUPPORTED_CHAINS } from '../../shared/constants/chain.constants'
+import { SUPPORTED_CHAINS } from '../../shared/constants/chain.constants';
 
 export class WithdrawParamsDto {
     @Transform(({ value }) => parseInt(value, 10))
     @ApiProperty({
         description: 'Chain Id',
-        example: '84532',
+        example: '8453',
         required: true,
         enum: SUPPORTED_CHAINS,
     })
@@ -24,7 +24,7 @@ export class WithdrawBodyDto {
     @ApiProperty({
         description: 'EIP-712 typed data object.',
         example: {
-            domain: { name: 'agent-casino', version: '1', chainId: 84532 },
+            domain: { name: 'agent-casino', version: '1', chainId: 8453 },
             types: {
                 Withdraw: [
                     { name: 'agentId', type: 'uint256' },
