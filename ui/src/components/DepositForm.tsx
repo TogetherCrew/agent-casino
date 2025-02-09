@@ -59,7 +59,7 @@ export const DepositForm = ({ targetWallet, onSuccess }: DepositFormProps) => {
           <label className="block text-xs font-medium text-gray-700 mb-1">
             Amount (ETH)
           </label>
-          <div className="text-xs font-medium text-gray-700 mb-1">Balance: {formatEther(balance?.value || 0n).slice(0, 6)}</div>
+          <div className="text-xs font-medium text-gray-700 mb-1">Balance: {formatEther(balance?.value || BigInt(0)).slice(0, 6)}</div>
         </div>
         <input
           type="number"
@@ -71,7 +71,7 @@ export const DepositForm = ({ targetWallet, onSuccess }: DepositFormProps) => {
               message: "Amount must be greater than 0",
             },
             max: {
-              value: Number(formatEther(balance?.value || 0n)),
+              value: Number(formatEther(balance?.value || BigInt(0))),
               message: "Amount exceeds wallet balance",
             },
           })}

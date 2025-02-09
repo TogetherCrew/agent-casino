@@ -1,6 +1,7 @@
 import { useForm } from "react-hook-form";
-import { useBalance, useSignMessage, useSignTypedData } from "wagmi";
+import { useBalance, useSignTypedData } from "wagmi";
 import { formatEther, parseEther } from "viem";
+import { useEffect } from "react";
 
 interface WithdrawlFormProps {
   agentId: number;
@@ -15,6 +16,7 @@ interface FormValues {
 export const WithdrawlForm = ({ agentId, agentWallet, onSuccess }: WithdrawlFormProps) => {
 
   const isLoading = false
+  const isSuccess = false
 
   const { signTypedDataAsync } = useSignTypedData()
   const {
@@ -63,11 +65,11 @@ export const WithdrawlForm = ({ agentId, agentWallet, onSuccess }: WithdrawlForm
     }
   };
 
-  // useEffect(() => {
-  //   if (isSuccess) {
-  //     onSuccess?.();
-  //   }
-  // }, [isSuccess, onSuccess]);
+  useEffect(() => {
+    if (isSuccess) {
+      onSuccess?.();
+    }
+  }, [isSuccess, onSuccess]);
 
 
   return (
@@ -77,7 +79,7 @@ export const WithdrawlForm = ({ agentId, agentWallet, onSuccess }: WithdrawlForm
           <label className="block text-xs font-medium text-gray-700 mb-1">
             Amount (ETH)
           </label>
-          <div className="text-xs font-medium text-gray-700 mb-1">Balance: {formatEther(balance?.value || 0n).slice(0, 6)}</div>
+          <div className="text-xs font-medium text-gray-700 mb-1">Balance: {formatEther(balance?.value || BigInt(0)).slice(0, 6)}</div>
         </div>
         <input
           type="number"
@@ -89,7 +91,7 @@ export const WithdrawlForm = ({ agentId, agentWallet, onSuccess }: WithdrawlForm
               message: "Amount must be greater than 0",
             },
             max: {
-              value: Number(formatEther(balance?.value || 0n)),
+              value: Number(formatEther(balance?.value || BigInt(0))),
               message: "Amount exceeds wallet balance",
             },
           })}

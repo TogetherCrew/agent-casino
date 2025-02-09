@@ -4,12 +4,21 @@ import { CardHeader } from "../card/CardHeader"
 import { Loading } from "../Loading";
 import { RawRound, Round, transformRound } from "@/app/utils/round.transform";
 import { useRounds } from "@/hooks/predictionV2/useRounds";
-import { formatEther } from "viem";
+import { formatEther, Log } from "viem";
 import { Position } from "@/app/utils/userBets.transform";
 import { predictionV2 } from "@/contracts";
 import { useAppKitNetwork } from "@reown/appkit/react";
 import { usePublicClient, useWatchContractEvent } from "wagmi";
 import { shortenAddress } from "@/app/utils/shortenAddress";
+
+
+type EventLog = Log & {
+  args: {
+    epoch: number;
+    amount: bigint;
+    sender: `0x${string}`;
+  };
+};
 
 const PositionWidget = ({ position, amount, totalAmount }: { position: Position, amount: bigint, totalAmount: bigint }) => {
 
@@ -62,8 +71,7 @@ const BetEventListener = ({ epoch }: { epoch: number }) => {
   const { chainId } = useAppKitNetwork();
   const [bets, setBets] = useState<Bet[]>([]);
 
-  const processLog = (log: any, position: Position) => {
-    console.log(log);
+  const processLog = (log: EventLog, position: Position) => {
     setBets([...bets, {
       position,
       epoch: log.args.epoch,
@@ -77,10 +85,10 @@ const BetEventListener = ({ epoch }: { epoch: number }) => {
     abi: predictionV2.abi,
     eventName: 'BetBear',
     fromBlock,
-    args: [null, epoch, null],
-    onLogs: (logs: any) => {
-      logs.forEach((log: any) => {
-        processLog(log, Position.Bear);
+    args: { epoch },
+    onLogs: (logs: Log[]) => {
+      logs.forEach((log: Log) => {
+        processLog(log as EventLog, Position.Bear);
       });
     }
   })
@@ -90,10 +98,10 @@ const BetEventListener = ({ epoch }: { epoch: number }) => {
     abi: predictionV2.abi,
     eventName: "BetBull",
     fromBlock,
-    args: [null, epoch, null],
-    onLogs: (logs: any) => {
-      logs.forEach((log: any) => {
-        processLog(log, Position.Bull);
+    args: { epoch },
+    onLogs: (logs: Log[]) => {
+      logs.forEach((log: Log) => {
+        processLog(log as EventLog, Position.Bull);
       });
     }
   })

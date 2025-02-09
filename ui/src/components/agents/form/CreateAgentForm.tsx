@@ -14,7 +14,11 @@ const schema = z.object({
   name: z.string().min(3, "Name must be at least 3 characters").max(32, "Name must be at most 32 characters"),
   bio: z.string().min(10, "Bio must be at least 10 characters").max(1100, "Bio must be at most 1000 characters"),
   registerPrice: z.bigint(),
-});
+}) as z.ZodType<{
+  name: string;
+  bio: string;
+  registerPrice: bigint;
+}>;
 
 type FormValues = z.infer<typeof schema>;
 
@@ -24,9 +28,9 @@ export default function CreateAgentForm() {
   const { writeContractAsync } = useWriteContract();
   const { isPending, isSuccess } = useWaitForTransactionReceipt({ hash: hash as `0x${string}` });
   const [isSubmitting, setIsSubmitting] = useState(false);
-
   const methods = useForm<FormValues>({
-    resolver: zodResolver(schema),
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    resolver: zodResolver(schema as any),
   });
 
   const onSubmit = async (data: FormValues) => {
