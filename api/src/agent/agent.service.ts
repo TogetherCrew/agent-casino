@@ -94,7 +94,8 @@ export class AgentService {
 
         const tnx = await this.cdpService.createTransfer(
             wallet,
-            recoveredAddress
+            recoveredAddress,
+            requestAmountEther
         )
         return tnx.getTransactionHash()
     }

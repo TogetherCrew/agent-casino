@@ -41,7 +41,7 @@ interface WithdrawTypedData {
 
 // 1) Dummy Private Key: DO NOT use in production
 const DUMMY_PRIVATE_KEY =
-    '0x4c1d76fbc8761b5ce8644fe5cf8414bd580340640b62c6025a538a28e6283092f2f'
+    '0x4cfe0fbe8761b5ce844ee5cf8344bd323e0430b62c6025a537a28e6283092f2f'
 
 // Convert the private key into an "Account" object that viem can use
 const account = privateKeyToAccount(DUMMY_PRIVATE_KEY)
@@ -92,7 +92,7 @@ async function main() {
         primaryType: 'Withdraw',
         message: {
             agentId: 14,
-            amount: 20000000000000n, // e.g. "0.01 ETH" in wei if you interpret it that way
+            amount: 30000000000000n, // e.g. "0.01 ETH" in wei if you interpret it that way
             expireAt: 1767097847, // Some future timestamp
         },
     }

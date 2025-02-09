@@ -1,6 +1,6 @@
 import { InjectPinoLogger, PinoLogger } from 'nestjs-pino'
 
-import { Coinbase, Destination, Wallet } from '@coinbase/coinbase-sdk'
+import { Amount, Coinbase, Destination, Wallet } from '@coinbase/coinbase-sdk'
 import { Injectable } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
 
@@ -43,11 +43,13 @@ export class CdpService {
         }
     }
 
-    public async createTransfer(wallet: Wallet, destination: Destination) {
-        console.log(destination, typeof destination)
-
+    public async createTransfer(
+        wallet: Wallet,
+        destination: Destination,
+        amount: Amount
+    ) {
         const transfer = await wallet.createTransfer({
-            amount: 0.000001,
+            amount,
             assetId: Coinbase.assets.Eth,
             destination,
         })
