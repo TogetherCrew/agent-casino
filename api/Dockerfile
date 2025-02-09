@@ -23,10 +23,3 @@ COPY . .
 RUN npm install --only=production --ignore-scripts
 EXPOSE 3000
 CMD ["node", "dist/main"]
-
-# Stage 4: Testing
-FROM node:20-alpine AS test
-WORKDIR /app
-COPY --from=builder /app .
-RUN npm install --only=development
-CMD [ "npx", "jest", "--coverage" ]
