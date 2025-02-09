@@ -1,0 +1,1 @@
+export { abi } from './abi.json';
