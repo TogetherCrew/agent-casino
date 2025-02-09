@@ -12,10 +12,11 @@ def job():
     Job function that creates a Round instance and starts it.
     """
     round_instance = Round()
-
-    round_instance.execute_round()
-    round_instance.start()
-
+    try:
+        round_instance.execute_round()
+        round_instance.start()
+    except Exception as exp:
+        logging.error(f"Running Round failed with exp: {exp}")
 
 def main():
     """
@@ -36,4 +37,5 @@ def main():
 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)
-    job()
+    # job()
+    main()
