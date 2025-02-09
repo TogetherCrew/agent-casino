@@ -1,72 +1,34 @@
-import asyncio
 import logging
-
-from crewai import Agent, Crew, Task
-from crewai.crews.crew_output import CrewOutput
+import schedule
+import time
 from dotenv import load_dotenv
-
 from round import Round
-from utils.configs import FetchConfigs
-from utils.define_crews import create_agents_and_tasks
-from utils.prices import FetchHistoricalPrices
 
-
-async def execute_crews(
-    agents: list[Agent], tasks: list[Task], input_data: list[dict]
-) -> None:
+def job():
     """
-    Execute the crew's tasks asynchronously with the provided input data.
-
-    Args:
-        agents (list[Agent]): The list of agents.
-        tasks (list[Task]): The list of tasks to execute.
-        input_data (list[dict]): A list of input dictionaries for the tasks.
+    Job function that creates a Round instance and starts it.
     """
-    results: list[CrewOutput] = []
+    round_instance = Round()
 
-    crew_tasks = [
-        Crew(agents=[agent], tasks=[task]).kickoff_async(inputs=input_data)
-        for agent, task in zip(agents, tasks)
-    ]
-
-    # Await all the crews concurrently
-    results = await asyncio.gather(*crew_tasks)
-
-    # Json dump for bets
-    # TODO: to be stored on-chain
-    import json
-
-    results_data = [
-        json.loads(result.tasks_output[0].raw) for result in results
-    ]  # Convert each result to a dictionary
-
-    # Save to a JSON file
-    with open("results.json", "w", encoding="utf-8") as f:
-        json.dump(results_data, f, indent=4)
-
+    round_instance.execute_round()
+    round_instance.start()
 
 def main():
     """
-    Main function to load configurations, create agents/tasks, and run the asynchronous crew execution.
+    Main function that loads configurations and schedules the job to run every 5 minutes.
     """
     load_dotenv()
-
-    # agent_configs = asyncio.run(FetchConfigs().fetch_agents_concurrently())
-
-    # Create agents and tasks related to each
-    # agents, tasks = create_agents_and_tasks(agent_configs)
-
-    # Define input data for tasks
-    # return dict timestamps and prices for each
-    # input_data = FetchHistoricalPrices().fetch()
-
-    # Run the asynchronous crew execution.
-    # asyncio.run(execute_crews(agents, tasks, input_data))
-
-    round = Round()
-    round.start()
-
+    
+    # Schedule the job to run every 5 minutes
+    schedule.every(5).minutes.do(job)
+    
+    logging.info("Scheduler started. Running round.start() every 5 minutes.")
+    
+    # Keep running pending scheduled tasks
+    while True:
+        schedule.run_pending()
+        time.sleep(1)
 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)
-    main()
+    job()

@@ -1,3 +1,4 @@
+import os
 import asyncio
 import logging
 
@@ -13,6 +14,47 @@ from utils.schema import AgentConfig, AgentOutput, DecisionEnum, RoundData
 class Round:
     def __init__(self):
         self.config_fetcher = FetchConfigs()
+
+    def execute_round(self):
+        game_master_key = os.getenv("GAME_MASTER_PRIVATE_KEY")
+        if not game_master_key:
+            raise ValueError("GAME_MASTER_PRIVATE_KEY not provided in envs!")
+        
+        account = self.config_fetcher.w3.eth.account.from_key(game_master_key)
+        
+        abi = self.config_fetcher.prediction_abi
+        prediction_contract_address = self.config_fetcher.prediction_contract_address
+        contract = self.config_fetcher.w3.eth.contract(
+            address=prediction_contract_address,
+            abi=abi
+        )
+
+        # # Get the current nonce for the account.
+        # nonce = self.config_fetcher.w3.eth.get_transaction_count(account.address)
+        # logging.info(account.address)
+
+        # Build the transaction to call executeRound. Adjust chainId, gas, and gasPrice as needed.
+        transaction = contract.functions.executeRound().transact(
+        {
+            "from": account.address,
+            # 'chainId': 84532,
+            # 'gas': 30000,               # Gas limit; you may need to estimate or adjust this value
+            # 'gasPrice': self.config_fetcher.w3.to_wei('50', 'gwei'),  # Gas price; adjust based on current network conditions
+            # 'nonce': nonce,
+        }
+        )
+
+        # --- Sign the Transaction ---
+        signed_txn = account.signTransaction(transaction)
+
+        # --- Send the Transaction ---
+        tx_hash = self.config_fetcher.w3.eth.send_raw_transaction(signed_txn.rawTransaction)
+        logging.info("Transaction sent! Tx hash:", self.config_fetcher.w3.toHex(tx_hash))
+
+        # --- (Optional) Wait for the Transaction Receipt ---
+        receipt = self.config_fetcher.w3.eth.wait_for_transaction_receipt(tx_hash)
+        logging.info("Transaction receipt:", receipt)
+
 
     def start(self):
         """
@@ -157,7 +199,7 @@ class Round:
             asset_id="eth",
         )
         invocation.wait()
-        logging.info(f"Agent {agent_config.walletId} successfully decided!")
+        logging.info(f"Agent successfully decided!")
 
     def _get_wallet(self, agent_wallet_id: str) -> Wallet:
         return Wallet.fetch(wallet_id=agent_wallet_id)
