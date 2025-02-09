@@ -77,7 +77,6 @@ class FetchConfigs:
     def fetch_agents(self) -> list[AgentConfig]:
         """
         Fetch agent configurations from a JSON file and parse them into AgentConfig objects.
-        TODO: Fetch from on-chain data
 
         Returns:
             List[AgentConfig]: A list of parsed AgentConfig instances.

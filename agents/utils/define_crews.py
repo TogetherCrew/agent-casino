@@ -1,10 +1,10 @@
 import logging
+from random import random
 
 from crewai import Agent, Task
 
 from utils.schema import AgentConfig, AgentOutput
 
-from random import random
 
 def create_agents_and_tasks(
     agent_configs: list[AgentConfig],
@@ -26,13 +26,12 @@ def create_agents_and_tasks(
 
     agents = []
     tasks = []
-    # to be prices in future
-    # or community sentiment, or any other things
     seed = random()
 
     task_description = (
-        f"Based on the your personality and a random seed {seed}, predict if the next value will go 'up' or 'down'. "
-        "Explain your reasoning."
+        f"Based on your personality, wallet details, and a random seed {seed}, predict if the next value will go 'up' or 'down'. "
+        "Explain your reasoning. Also, include the coinBaseWalletId "
+        "as part of your response."
     )
 
     for agent_info in agent_configs:
@@ -48,8 +47,9 @@ def create_agents_and_tasks(
                 description=task_description,
                 agent=agent,
                 expected_output=(
-                    "A prediction ('BEAR', 'BULL', or 'SKIP') with a thesis (reasoning) max 1 paragraph for it."
-                    f" Please include how much to be invested and it should be less than {agent_info.balance}"
+                    "Return a prediction ('BEAR', 'BULL', or 'SKIP') along with a short thesis. "
+                    f"Make sure the investment amount is less than {agent_info.balance}. "
+                    "Include all your configuration details as specified."
                 ),
                 output_pydantic=AgentOutput,
             )

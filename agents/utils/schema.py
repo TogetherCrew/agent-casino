@@ -10,14 +10,6 @@ class DecisionEnum(str, Enum):
     SKIP = "SKIP"
 
 
-class AgentOutput(BaseModel):
-    decision: DecisionEnum = Field(
-        ..., description="The investment decision: BEAR, BULL, or SKIP."
-    )
-    amount: float = Field(..., description="The amount of investment.")
-    thesis: str = Field(..., description="The reasoning behind the decision.")
-
-
 class AgentConfig(BaseModel):
     model_config = {"arbitrary_types_allowed": True}
     name: str = Field(
@@ -31,6 +23,15 @@ class AgentConfig(BaseModel):
     coinBaseWalletId: str = Field(..., description="Their wallet id")
     address: str = Field(..., description="Agent wallet address")
     balance: float | None = Field(None, description="The agent's wallet funds balance")
+
+
+class AgentOutput(BaseModel):
+    decision: DecisionEnum = Field(
+        ..., description="The investment decision: BEAR, BULL, or SKIP."
+    )
+    amount: float = Field(..., description="The amount of investment.")
+    thesis: str = Field(..., description="The reasoning behind the decision.")
+    wallet_id: str = Field(..., description="Agent wallet wallet_id")
 
 
 class RoundData(BaseModel):

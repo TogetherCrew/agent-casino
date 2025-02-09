@@ -5,7 +5,6 @@ from typing import Any
 from cdp import Wallet
 from crewai import Agent, Crew, Task
 from crewai.crews.crew_output import CrewOutput
-from web3 import Web3
 
 from utils.configs import FetchConfigs
 from utils.define_crews import create_agents_and_tasks
@@ -29,8 +28,6 @@ class Round:
             abi=self.config_fetcher.prediction_abi,
         )
         current_epoch = prediction_contract.functions.currentEpoch().call()
-        round_data: list = prediction_contract.functions.rounds(current_epoch).call()
-        round_data_obj = self._prepare_round_data(data=round_data)
 
         # Claiming the rewards in this loop
         for agent in agents:
@@ -44,24 +41,14 @@ class Round:
                 self._execute_agent_claim_tx(agent=agent, epoch=current_epoch - 1)
                 print(f"Claimed for epoch {claim_epoch - 1}!")
 
-                agent_contract = w3.eth.contract(
-                    address=agent.address,
-                    abi=self.config_fetcher.agent_abi,
-                )
-
-                # TODO: line not tested yet!
-                balance: float = agent_contract.functions.getAgentTokenBalances.call()
-                agent.balance = balance
+                wallet = self._get_wallet(agent_wallet_id=agent.coinBaseWalletId)
+                agent.balance = wallet.balances()
 
         crewai_agents, crewai_tasks = create_agents_and_tasks(agent_configs=agents)
         agents_decision = asyncio.run(
-            self.execute_crews(
-                agents=crewai_agents, tasks=crewai_tasks
-            )
+            self.execute_crews(agents=crewai_agents, tasks=crewai_tasks)
         )
 
-        # Writing decisions on contract
-        # TODO: how to do write operations with cdp????
         self.execute_decisions(
             current_epoch=current_epoch,
             agents_output=agents_decision,
@@ -119,34 +106,56 @@ class Round:
         self,
         current_epoch: int,
         agents_output: list[AgentOutput],
-        prediction_contract: Any,
     ) -> None:
         for agent in agents_output:
-            if agent.decision.value == DecisionEnum.BEAR.value:
-                # TODO: do a bear decision
-                prediction_contract.functions.betBear(
-                    agent.amount,
-                    current_epoch,
-                    agent.thesis,
-                ).call()
-            elif agent.decision.value == DecisionEnum.BULL.value:
-                prediction_contract.functions.betBull(
-                    agent.amount,
-                    current_epoch,
-                    agent.thesis,
-                ).call()
-            elif agent.decision.value == DecisionEnum.SKIP.value:
-                pass
+            self._execute_agent_decision(
+                current_epoch=agent,
+                epoch=current_epoch,
+            )
 
     def _execute_agent_claim_tx(self, agent: AgentConfig, epoch: int):
         # prediction contract's ABI
         abi = self.config_fetcher.prediction_abi
         prediction_contract_address = self.config_fetcher.prediction_contract_address
+        wallet = self._get_wallet(agent_wallet_id=agent.coinBaseWalletId)
 
-        invocation = agent.wallet.invoke_contract(
+        invocation = wallet.invoke_contract(
             contract_address=prediction_contract_address,
             abi=abi,
             method="claim",
-            args={"to": agent.wallet.addresses, "value": epoch},
+            args={"epochs": epoch},
         )
         invocation.wait()
+
+    def _execute_agent_decision(self, agent: AgentOutput, epoch: int) -> None:
+        abi = self.config_fetcher.prediction_abi
+        prediction_contract_address = self.config_fetcher.prediction_contract_address
+        wallet = self._get_wallet(agent_wallet_id=agent.wallet_id)
+
+        method: str
+        if agent.decision.value == DecisionEnum.BEAR.value:
+            method = "betBear"
+        elif agent.decision.value == DecisionEnum.BULL.value:
+            method = "betBull"
+        elif agent.decision.value == DecisionEnum.SKIP.value:
+            return
+
+        invocation = wallet.invoke_contract(
+            contract_address=prediction_contract_address,
+            abi=abi,
+            method=method,
+            args={"epoch": epoch, "thesis": agent.thesis, "value": agent.amount},
+        )
+        invocation.wait()
+
+    def _get_wallet(self, agent_wallet_id: str) -> str:
+        # return Wallet.fetch(wallet_id=agent_wallet_id)
+        addresses = Wallet.fetch(wallet_id=agent_wallet_id).addresses
+
+        wallet_address: str
+        for adr in addresses:
+            if adr.network_id == "base-sepolia":
+                wallet_address = adr.address_id
+                break
+
+        return wallet_address
