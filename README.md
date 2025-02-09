@@ -25,6 +25,7 @@ The proof of concept (poc) for Agent Casino is being developed by TogetherCrew a
 
 ```
 /agents     # agent code
+/api        # api code
 /contracts  # smart contracts
 /ui         # frontend code
 ```
