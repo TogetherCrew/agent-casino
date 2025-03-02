@@ -1,16 +1,17 @@
-import { LoggerModule } from 'nestjs-pino'
+import { LoggerModule } from 'nestjs-pino';
 
-import { Module } from '@nestjs/common'
-import { ConfigModule, ConfigService } from '@nestjs/config'
+import { Module } from '@nestjs/common';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 
-import { AgentFactoryListenerService } from './agent-factory/agent-factory-listener.service'
-import { AgentModule } from './agent/agent.module'
-import { AgentService } from './agent/agent.service'
-import { CdpModule } from './cdp/cdp.module'
-import { CdpService } from './cdp/cdp.service'
-import { configModules, configValidationSchema } from './config'
-import { pinoConfig } from './config/pino.config'
-import { UtilsModule } from './utils/utils.module'
+import { AgentFactoryListenerService } from './agent-factory/agent-factory-listener.service';
+import { AgentModule } from './agent/agent.module';
+import { AgentService } from './agent/agent.service';
+import { CdpModule } from './cdp/cdp.module';
+import { CdpService } from './cdp/cdp.service';
+import { configModules, configValidationSchema } from './config';
+import { pinoConfig } from './config/pino.config';
+import { SgnetModule } from './sgnet/sgnet.module';
+import { UtilsModule } from './utils/utils.module';
 
 @Module({
     imports: [
@@ -27,6 +28,7 @@ import { UtilsModule } from './utils/utils.module'
         AgentModule,
         UtilsModule,
         CdpModule,
+        SgnetModule,
     ],
     controllers: [],
     providers: [AgentFactoryListenerService, CdpService, AgentService],
